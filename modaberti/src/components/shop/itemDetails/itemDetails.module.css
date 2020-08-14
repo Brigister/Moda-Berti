@@ -1,0 +1,18 @@
+.container{
+    margin-top: 2%;
+}
+
+.image{
+    width: 400px;
+}
+
+.name, .brand, .price {
+    margin-bottom: 10px;
+}
+
+.description{
+    margin-bottom: 10px;
+}
+
+
+

@@ -1,0 +1,175 @@
+{
+   "status": "success",
+   "data": [
+      {
+         "id": 1,
+         "name": "Maglia Pyrex",
+         "imageUrl": "https://via.placeholder.com/150/771796",
+         "brand": "Pyrex",
+         "gender": [
+            {
+               "id": 1,
+               "text": "Uomo"
+            },
+            {
+               "id": 2,
+               "text": "Donna"
+            }
+         ],
+         "quantity": 22
+      },
+      {
+         "id": 2,
+         "name": "Maglia Pyrex",
+         "imageUrl": "https://via.placeholder.com/150/771796",
+         "brand": "Pyrex",
+         "gender": [
+            {
+               "id": 1,
+               "text": "Uomo"
+            },
+            {
+               "id": 2,
+               "text": "Donna"
+            }
+         ],
+         "quantity": 3
+      },
+      {
+         "id": 3,
+         "name": "Maglia Pyrex",
+         "imageUrl": "https://via.placeholder.com/150/771796",
+         "brand": "Pyrex",
+         "gender": [
+            {
+               "id": 1,
+               "text": "Uomo"
+            },
+            {
+               "id": 2,
+               "text": "Donna"
+            }
+         ],
+         "quantity": 3
+      },
+      {
+         "id": 4,
+         "name": "Maglia Pyrex",
+         "imageUrl": "https://via.placeholder.com/150/771796",
+         "brand": "Pyrex",
+         "gender": [
+            {
+               "id": 1,
+               "text": "Uomo"
+            },
+            {
+               "id": 2,
+               "text": "Donna"
+            }
+         ],
+         "quantity": 3
+      },
+      {
+         "id": 5,
+         "name": "Maglia Pyrex",
+         "imageUrl": "https://via.placeholder.com/150/771796",
+         "brand": "Pyrex",
+         "gender": [
+            {
+               "id": 1,
+               "text": "Uomo"
+            },
+            {
+               "id": 2,
+               "text": "Donna"
+            }
+         ],
+         "quantity": 3
+      },
+      {
+         "id": 6,
+         "name": "Maglia Pyrex",
+         "imageUrl": "https://via.placeholder.com/150/771796",
+         "brand": "Pyrex",
+         "gender": [
+            {
+               "id": 1,
+               "text": "Uomo"
+            },
+            {
+               "id": 2,
+               "text": "Donna"
+            }
+         ],
+         "quantity": 3
+      },
+      {
+         "id": 7,
+         "name": "Maglia Pyrex",
+         "imageUrl": "https://via.placeholder.com/150/771796",
+         "brand": "Pyrex",
+         "gender": [
+            {
+               "id": 1,
+               "text": "Uomo"
+            },
+            {
+               "id": 2,
+               "text": "Donna"
+            }
+         ],
+         "quantity": 3
+      },
+      {
+         "id": 8,
+         "name": "Maglia Pyrex",
+         "imageUrl": "https://via.placeholder.com/150/771796",
+         "brand": "Pyrex",
+         "gender": [
+            {
+               "id": 1,
+               "text": "Uomo"
+            },
+            {
+               "id": 2,
+               "text": "Donna"
+            }
+         ],
+         "quantity": 3
+      },
+      {
+         "id": 9,
+         "name": "Maglia Pyrex",
+         "imageUrl": "https://via.placeholder.com/150/771796",
+         "brand": "Pyrex",
+         "gender": [
+            {
+               "id": 1,
+               "text": "Uomo"
+            },
+            {
+               "id": 2,
+               "text": "Donna"
+            }
+         ],
+         "quantity": 3
+      },
+      {
+         "id": 10,
+         "name": "Maglia Pyrex",
+         "imageUrl": "https://via.placeholder.com/150/771796",
+         "brand": "Pyrex",
+         "gender": [
+            {
+               "id": 1,
+               "text": "Uomo"
+            },
+            {
+               "id": 2,
+               "text": "Donna"
+            }
+         ],
+         "quantity": 3
+      }
+   ]
+}

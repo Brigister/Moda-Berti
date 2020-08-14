@@ -1,0 +1,20 @@
+.links{ 
+    all: unset;
+    color: white;
+    cursor: pointer;
+}
+
+.container{
+    display: flex;
+    justify-content: space-between;
+}
+
+.route { 
+    all: unset;
+    margin-right: 30px;
+
+}
+
+.active{
+    color: red;
+}
