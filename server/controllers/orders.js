@@ -1,4 +1,6 @@
-const Order = require('../models/order')
+const Order = require('../models/order');
+const pool = require('../config/database');
+const { queryPromise } = require('../utils/mysql-promise-wrapper');
 
 
 /**
@@ -7,32 +9,55 @@ const Order = require('../models/order')
  * @acces private
  */
 exports.getUserOrders = async (req, res) => {
-    try {
-        const { id } = req.params;
-        console.log(id);
-
-        const orders = await Order.find({ userId: id });
-        /*  console.log(pippo); */
-
-        if (!orders) {
-            return res.status(404).json({
-                success: false,
-                data: "No order found"
+    const { id } = req.params;
+    /*     try {
+            
+            console.log(id);
+    
+            const orders = await Order.find({ userId: id }).sort({ createdAt: "desc" });
+    
+            if (!orders) {
+                return res.status(404).json({
+                    success: false,
+                    data: "No order found"
+                });
+            }
+            return res.status(200).json({
+                success: true,
+                data: orders
             });
-        }
-        return res.status(200).json({
-            success: true,
-            data: orders
-        });
+    
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({
+                success: false,
+                err: err.message
+            });
+        } */
+    const toBeSelected = "orders.id, orders.status, orders.create_time,order_items.size, products.id, products.name, products.brand, products.collection, products.price, products.image_url"
+    const sql = `SELECT ${toBeSelected}
+    FROM orders 
+    RIGHT JOIN order_items 
+        ON orders.id = order_items.order_id
+    LEFT JOIN products
+        ON order_items.product_id = products.id
+    WHERE orders.status != 'cart' AND orders.user_id = ${pool.escape(id)} `;
+    console.log(sql);
 
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({
+    const results = await queryPromise(pool, sql);
+
+    if (results.lenght == 0) {
+        return res.status(404).json({
             success: false,
-            err: err.message
+            error: "No orders found by given id"
         });
     }
+    else return res.status(200).json({
+        success: true,
+        data: results
+    });
 }
+
 
 exports.postOrder = async (req, res) => {
     console.log(req.body)

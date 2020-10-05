@@ -1,19 +1,19 @@
-const Cart = require('../models/cart');
-
+const pool = require('../config/database');
 const stripe = require("stripe")(process.env.STRIPE_SECRET);
 
+const calculateOrderAmount = (id) => {
 
-const calculateOrderAmount = async (id) => {
-    try {
-        const cart = await Cart.findOne({ userId: id });
+    const sql = `SELECT SUM(price) as total FROM order_items LEFT JOIN products ON order_items.product_id =products.id WHERE order_id = ${pool.escape(id)}`
 
-        const total = await cart.products.reduce((currentTotal, product) => currentTotal + product.price, 0);
-        console.log(total);
+    return new Promise((resolve, reject) => {
+        pool.query(sql, (error, results) => {
+            if (error) {
+                console.log(error);
+            }
+            else resolve(results[0].total)
+        });
+    });
 
-        return total;
-    } catch (err) {
-        console.log(err.message);
-    }
 };
 
 exports.getPayment = (req, res) => {
@@ -22,12 +22,15 @@ exports.getPayment = (req, res) => {
 
 exports.postPayment = async (req, res) => {
 
+
+
     try {
-        const { id } = req.body;
+        const { id, email } = req.body;
         // Create a PaymentIntent with the order amount and currency
         const paymentIntent = await stripe.paymentIntents.create({
             amount: await calculateOrderAmount(id),
-            currency: "eur"
+            currency: "eur",
+            receipt_email: email
         });
         res.status(200).send(paymentIntent.client_secret);
     } catch (err) {

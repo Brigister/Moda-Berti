@@ -4,11 +4,11 @@ const router = express.Router();
 const { insertProduct, getUserCart, removeFromCart, deleteUserCart } = require('../controllers/carts');
 
 router.route('/')
-    .post(insertProduct)
-    .patch(removeFromCart);
 
 router.route('/:id')
     .get(getUserCart)
+    .post(insertProduct)
+    .patch(removeFromCart)
     .delete(deleteUserCart);
 
 module.exports = router

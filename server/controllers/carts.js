@@ -1,34 +1,29 @@
 const Cart = require('../models/cart');
+const pool = require('../config/database');
+const cart = require('../models/cart');
 
 /**
  * @desc get a cart based on userId
  * @router GET /api/cart/:id
  * @access ?
  */
-exports.getUserCart = async (req, res,) => {
-    console.log(req.params.id);
+exports.getUserCart = (req, res,) => {
+    const { id } = req.params;
 
-    try {
-        const cart = await Cart.findOne({ userId: req.params.id });
+    const sql = `SELECT * FROM orders JOIN order_items ON orders.id = order_items.order_id WHERE status = 'cart' && orders.user_id  = ${pool.escape(id)}`
 
-        if (!cart) {
-            return res.status(404).json({
+    pool.query(sql, (error, results) => {
+        if (error) {
+            return res.status(500).json({
                 succes: false,
-                error: "No cart found by given id"
+                error
             });
         }
-        else {
-            res.status(200).json({
-                succes: true,
-                data: cart
-            });
-        }
-    } catch (err) {
-        res.status(500).json({
-            succes: false,
-            error: err
+        else return res.status(200).json({
+            succes: true,
+            data: results
         });
-    }
+    })
 }
 
 /**
@@ -38,166 +33,142 @@ exports.getUserCart = async (req, res,) => {
  */
 exports.insertProduct = async (req, res, next) => {
     console.log(req.body)
-    try {
-        const { userId, productId, name, price, imageUrl, size, quantity } = req.body;
 
-        let cart = await Cart.findOne({ userId });
-        console.log(size);
+    const { id } = req.params;
+    const checkCart = `SELECT id FROM orders WHERE user_id = ${pool.escape(id)} AND status ='cart'`;
+    const createCart = `INSERT INTO orders (user_id) VALUES (${pool.escape(id)})`;
 
-        if (!cart) {
-            const cartData = {
-                userId,
-                products: [{
-                    productId,
-                    name,
-                    price,
-                    imageUrl,
-                    size,
-                    quantity
-                }]
-            }
-            const newCart = await Cart.create(cartData);
-
-            return res.status(201).json({
-                succes: true,
-                /*  message: "Non hai un carello. eccoti quello nuovo", */
-                data: newCart
-            })
-        }
-
-        else {
-            const productData = {
-                productId,
-                name,
-                price,
-                imageUrl,
-                size,
-                quantity
-            }
-            cart.products.push(productData);
-            cart = await cart.save();
-
-            return res.status(200).json({
-                succes: true,
-                data: cart,
+    pool.getConnection((err, connection) => {
+        if (err) {
+            return res.status(500).json({
+                success: false,
+                error: err
             });
-
         }
+        else {
+            connection.beginTransaction(err => {
+                if (err) {
+                    connection.rollback();
+                    return res.status(500).json({
+                        success: false,
+                        error: err
+                    });
+                }
+                //controllo che abbia un carello
+                connection.query(checkCart, (error, results) => {
+                    if (error) {
+                        connection.rollback();
+                        return res.status(500).json({
+                            success: false,
+                            error
+                        });
+                    }
+                    //se non ce l'ha glielo creo e mi salvo il cartId
+                    else if (results.length == 0) {
+                        connection.query(createCart, (error, results) => {
+                            if (error) {
+                                connection.rollback();
+                                return res.status(500).json({
+                                    success: false,
+                                    error
+                                });
+                            }
+                            console.log("non c'era carello")
 
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({
-            succes: false,
-            error: err.message
-        });
+                            const addToCart = `INSERT INTO order_items SET order_id=${results.insertId}, ${pool.escape(req.body)}`;
+                            connection.query(addToCart, (error, results) => {
+                                if (error) {
+                                    connection.rollback();
+                                    return res.status(500).json({
+                                        success: false,
+                                        error
+                                    });
+                                }
+                                else {
+                                    connection.commit();
+                                    return res.status(200).json({
+                                        succes: true,
+                                        data: results
+                                    });
+                                }
+                            })
+                        });
+                    }
+                    else {
+                        //se ce l'ha mi prendo il cartId dalla prima query
+                        console.log("c'era carrello", results[0].id)
 
-
-    }
+                        //aggiungo un prodotto
+                        const addToCart = `INSERT INTO order_items SET order_id=${results[0].id}, ${pool.escape(req.body)}`;
+                        connection.query(addToCart, (error, results) => {
+                            if (error) {
+                                connection.rollback();
+                                return res.status(500).json({
+                                    success: false,
+                                    error
+                                });
+                            }
+                            else {
+                                connection.commit();
+                                return res.status(200).json({
+                                    succes: true,
+                                    data: results
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+        }
+    });
 }
 
 /**
  * @desc Delete a product from user cart
- * @router patch /api/cart
+ * @router patch /api/cart/:id
  * @access Public
  */
 exports.removeFromCart = async (req, res,) => {
-    try {
-        //itemId = id dell'entry del cart da rimuovere
-        const { userId, itemId } = req.body;
+    //id = id dell'entry del cart da rimuovere
+    const { id } = req.params;
 
-        let cart = await Cart.findOne({ userId });
+    const sql = `DELETE FROM order_items WHERE id = ${pool.escape(id)}`;
 
-        if (!cart) {
-            return res.status(404).json({
+    pool.query(sql, (error, results) => {
+        if (error) {
+            return res.status(500).json({
                 succes: false,
-                error: "No cart found by given id"
+                error
             });
         }
-        else {
-            const cartIndex = await cart.products.findIndex(product => product._id == itemId);
-            console.log(itemId)
-            console.log(cartIndex);
-            if (cartIndex > -1) {
-                cart.products.splice(cartIndex, 1);
-
-                cart = await cart.save();
-
-                res.status(200).json({
-                    succes: true,
-                    data: itemId
-                });
-            }
-            else res.status(404).json({
-                succes: false,
-                data: "No product found by given id"
-            });
-        }
-    } catch (err) {
-        res.status(500).json({
-            succes: false,
-            error: err.message
+        else return res.status(200).json({
+            succes: true,
+            data: results
         });
-    }
+    });
 }
 
 /**
- * @desc Delete user cart
+ * @desc Delete user cart by userId
  * @router delete /api/cart/:id
  * @access Private
  */
 exports.deleteUserCart = async (req, res,) => {
-    try {
-        const { id } = req.params
+    const { id } = req.params;
 
-        const deleted = await Cart.findByIdAndDelete(id);
+    const sql = `DELETE FROM orders WHERE status = 'cart' AND user_id = ${pool.escape(id)}`;
 
-        if (!deleted) {
-            return res.status(404).json({
+    pool.query(sql, (error, results) => {
+        if (error) {
+            return res.status(500).json({
                 succes: false,
-                err: "No product found by given id"
+                error
             });
         }
-        return res.status(200).json({
+        else return res.status(200).json({
             succes: true,
-            data: deleted.product
-        })
-    } catch (err) {
-        res.status(500).json({
-            succes: false,
-            err: err.message
+            data: results
         });
-    }
+    });
+
 }
-
-
-
-
-
-
-
-
-
-
-/* else {
-    const itemIndex = await card.products.findIndex(product =>)
-    const productIndex = await cart.products.findIndex(product => product.productId == productId);
-    const sizeIndex = await cart.products[productIndex].sizes.findIndex(size => size.size == sizes[0].size)
-    if (productIndex > -1 && sizeIndex > -1) {
-        //se ce la taglia
-        console.log(sizes[0].size)
-
-         if (sizeIndex > -1) {
-cart.products[productIndex].sizes[sizeIndex].quantity = sizes[0].quantity
-/}
-  else
-      //se non c'è la taglia
-      cart.products[productIndex].sizes.push({
-          size: sizes[0].size,
-          quantity: sizes[0].quantity
-      });
-cart = await cart.save();
-return res.status(200).json({
-    succes: true,
-    data: cart,
-});
-    } */

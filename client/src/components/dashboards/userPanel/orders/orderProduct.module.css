@@ -1,0 +1,11 @@
+p, h3 {
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+
+
+.productPaper {
+    display: flex;
+    width: 80%;
+    margin-bottom: 10px;
+}

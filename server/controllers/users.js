@@ -1,4 +1,4 @@
-const User = require('../models/user');
+const pool = require('../config/database');
 
 /**
  * 
@@ -6,26 +6,22 @@ const User = require('../models/user');
  * @route GET /api/users
  * @acces Public 
  */
-exports.getUsers = async (req, res, next) => {
-    try {
-        const users = await User.find();
+exports.getUsers = (req, res, next) => {
 
-        if (!users) {
-            return res.status(404).json({
+    const sql = "SELECT id, email, name, surname FROM users"
+
+    pool.query(sql, (error, results, fields) => {
+        if (error) {
+            return res.status(500).json({
                 success: false,
-                error: "No user found"
-            });
+                error: error
+            })
         }
         else return res.status(200).json({
             success: true,
-            data: users
+            results,
         })
-    } catch (err) {
-        res.status(500).json({
-            success: false,
-            error: err
-        })
-    }
+    })
 }
 
 /**
@@ -34,27 +30,29 @@ exports.getUsers = async (req, res, next) => {
  * @route GET /api/users/:id
  * @acces Private 
  */
-exports.getUser = async (req, res, next) => {
-    try {
-        const { id } = req.params
-        const user = await User.findById(id);
+exports.getUser = (req, res, next) => {
+    const { id } = req.params;
 
-        if (!user) {
-            return res.status(404).json({
+    const sql = `SELECT email, name, surname, isAdmin, create_time FROM users WHERE id = ${pool.escape(id)}`;
+
+    pool.query(sql, (error, results) => {
+        if (error) {
+            res.status(500).json({
                 success: false,
-                error: "No user found"
+                error
             });
         }
-        else return res.status(200).json({
-            success: true,
-            data: user
-        })
-    } catch (err) {
-        res.status(500).json({
+        else if (results.length > 0) {
+            res.status(200).json({
+                success: true,
+                data: results,
+            })
+        }
+        else return res.status(404).json({
             success: false,
-            error: err
-        })
-    }
+            error: "User not found"
+        });
+    });
 }
 
 /**
@@ -63,20 +61,27 @@ exports.getUser = async (req, res, next) => {
  * @route Delete /api/users/:id
  * @acces Private 
  */
-exports.deleteUser = async (req, res, next) => {
-    try {
-        const { id } = req.params
+exports.deleteUser = (req, res, next) => {
+    const { id } = req.params
 
-        await User.findByIdAndDelete(id);
+    const sql = `DELETE FROM users WHERE id = ${pool.escape(id)}`
 
-        return res.status(200).json({
+    pool.query(sql, (error, results) => {
+        if (error) {
+            return res.status(500).json({
+                success: false,
+                error
+            });
+        }
+        else if (!results.affectedRows) {
+            return res.status(404).json({
+                success: false,
+                error: "User not found"
+            });
+        }
+        else return res.status(200).json({
             success: true,
-        })
-
-    } catch (err) {
-        res.status(500).json({
-            success: false,
-            error: err
-        })
-    }
+            data: results
+        });
+    });
 }
