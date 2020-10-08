@@ -123,44 +123,89 @@ exports.editPassword = async (req, res, next) => {
     console.log(id);
     console.log(password);
     console.log(newPassword);
-    try {
-
-        const user = await User.findById(id);
-        console.log(user)
-
-        if (!user) {
-            return res.status(404).json({
+    pool.getConnection((err, connection) => {
+        if (err) {
+            return res.status(500).json({
                 success: false,
-                error: "No user found"
+                error: err
             });
         }
-        else {
-            const match = await bcrypt.compare(password, user.password);
-            console.log(match)
-            if (!match) {
-                return res.status(401).json({
+        connection.beginTransaction(err => {
+            if (err) {
+                connection.rollback();
+                return res.status(500).json({
                     success: false,
-                    error: "Wrong password"
-                })
+                    error: err
+                });
             }
-            else {
-                const hash = await bcrypt.hash(newPassword, 10);
-                console.log(hash);
-                await User.updateOne({ _id: id }, { password: hash });
+            const passwordSql = `SELECT password FROM users WHERE id = ${connection.escape(id)}`
+            connection.query(passwordSql, (error, results) => {
+                if (error) {
+                    connection.rollback();
+                    return res.status(500).json({
+                        success: false,
+                        error
+                    });
+                }
+                console.log('1query', results[0].password);
 
-                return res.status(200).json({
-                    success: true,
+                bcrypt.compare(password, results[0].password, (err, match) => {
+                    if (err) {
+                        connection.rollback();
+                        return res.status(500).json({
+                            success: false,
+                            error: err
+                        });
+                    }
+                    else if (match) {
+                        bcrypt.hash(newPassword, 10, (err, hash) => {
+                            if (err) {
+                                connection.rollback();
+                                return res.status(500).json({
+                                    success: false,
+                                    error: err
+                                });
+                            }
+                            const changePasswordSql = `UPDATE users SET password = ${connection.escape(hash)} WHERE id = ${connection.escape(id)}`;
 
-                })
-            }
-        }
-    } catch (err) {
-        res.status(500).json({
-            success: false,
-            error: err
-        })
-    }
+                            connection.query(changePasswordSql, (error, results) => {
+                                if (error) {
+                                    console.log(error)
+                                    connection.rollback();
+                                    return res.status(500).json({
+                                        success: false,
+                                        error
+                                    });
+                                }
+                                connection.commit(err => {
+                                    if (err) {
+                                        connection.rollback();
+                                        return res.status(500).json({
+                                            success: false,
+                                            error: err
+                                        });
+                                    }
+                                });
+                                return res.status(200).json({
+                                    success: true,
+                                });
+                            });
+                        });
+                    }
+                    else {
+                        return res.status(500).json({
+                            success: false,
+                            error: "La password inserita è sbagliata"
+                        })
+                    }
+                });
+            });
+
+        });
+    });
 }
+
+
 
 exports.refreshToken = (req, res) => {
     const token = req.cookies.jid
