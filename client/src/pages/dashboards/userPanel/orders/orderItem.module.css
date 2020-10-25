@@ -1,9 +1,19 @@
+.container {
+    margin: auto !important;
+}
+
 .orderItemCard {
     margin-bottom: 15px;
 }
 
 .actions {
     text-align: center !important;
+    display: flex;
+    justify-content: space-between;
+}
+
+.expand {
+    align-self: flex-end;
 }
 
 .button {

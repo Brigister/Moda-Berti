@@ -1,0 +1,13 @@
+.link {
+    text-decoration: none !important;
+    cursor: pointer !important;
+    color: white;
+}
+
+.text {
+    color: white;
+}
+
+.divider {
+    background-color: white !important;
+}

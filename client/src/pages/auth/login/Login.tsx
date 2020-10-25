@@ -14,13 +14,11 @@ import { Visibility, VisibilityOff } from '@material-ui/icons';
 
 
 import styles from '../auth.module.css'
-import { MutationResultPair, useMutation, useQueryCache } from 'react-query';
+import { MutationResultPair, useMutation } from 'react-query';
 
 import { UserContext } from '../../../context/UserContext'
-import axios from 'axios';
 import api from '../../../api/axiosIstance';
-import { LoginData } from '../../../interfaces/interfaces';
-import { AnySoaRecord } from 'dns';
+import { LoginData, Token } from '../../../interfaces/interfaces';
 
 
 
@@ -29,20 +27,20 @@ export const Login: React.FC = () => {
     const [fieldType, setFieldType] = useState(false);
     const history = useHistory();
     const { register, handleSubmit, errors } = useForm<LoginData>();
-
     const [login, { isError }]: MutationResultPair<any, Error, any, any> = useMutation(async (data: LoginData) => {
         const res = await api.post('auth/login', data);
         return res.data;
     }, {
         onSuccess: ({ token }: { token: string }) => {
             if (token) {
-                const { isAdmin } = decode(token);
+                const { userId, isAdmin }: Token = decode(token);
                 setUser({
                     token,
+                    userId,
                     isLoggedIn: true,
                     isAdmin
                 });
-                history.push('/shop');
+                history.push('/');
             }
         },
     })

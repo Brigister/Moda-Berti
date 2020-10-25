@@ -1,8 +1,6 @@
 const bcrypt = require('bcrypt');
 const { verify } = require('jsonwebtoken');
-const cookie = require('cookie');
 
-const User = require('../models/user');
 const pool = require('../config/database');
 const { createAccessToken, createRefreshToken } = require('../utils/jwt');
 
@@ -84,10 +82,10 @@ exports.login = (req, res, next) => {
                 })
             }
             else {
-                req.session.userId = id;
-                req.session.isAdmin = isAdmin;
+                /* req.session.userId = id;
+                req.session.isAdmin = isAdmin; */
 
-                res.cookie("jid", createRefreshToken(id, isAdmin), {
+                res.cookie("jwt", createRefreshToken(id, isAdmin), {
                     httpOnly: true
                 });
 
@@ -102,7 +100,7 @@ exports.login = (req, res, next) => {
 }
 
 exports.logout = (req, res) => {
-    res.clearCookie("jid");
+    res.clearCookie("jwt");
 
     res.status(200).json({
         success: true
@@ -117,12 +115,9 @@ exports.logout = (req, res) => {
  * @acces Private 
  */
 exports.editPassword = async (req, res, next) => {
-    const { id } = req.params;
+    const { userId } = req.userData;
     const { password, newPassword } = req.body;
 
-    console.log(id);
-    console.log(password);
-    console.log(newPassword);
     pool.getConnection((err, connection) => {
         if (err) {
             return res.status(500).json({
@@ -138,7 +133,7 @@ exports.editPassword = async (req, res, next) => {
                     error: err
                 });
             }
-            const passwordSql = `SELECT password FROM users WHERE id = ${connection.escape(id)}`
+            const passwordSql = `SELECT password FROM users WHERE id = ${connection.escape(userId)}`
             connection.query(passwordSql, (error, results) => {
                 if (error) {
                     connection.rollback();
@@ -166,7 +161,7 @@ exports.editPassword = async (req, res, next) => {
                                     error: err
                                 });
                             }
-                            const changePasswordSql = `UPDATE users SET password = ${connection.escape(hash)} WHERE id = ${connection.escape(id)}`;
+                            const changePasswordSql = `UPDATE users SET password = ${connection.escape(hash)} WHERE id = ${connection.escape(userId)}`;
 
                             connection.query(changePasswordSql, (error, results) => {
                                 if (error) {
@@ -208,16 +203,16 @@ exports.editPassword = async (req, res, next) => {
 
 
 exports.refreshToken = (req, res) => {
-    const token = req.cookies.jid
+    const token = req.cookies.jwt
     if (!token) {
         return res.status(500).json({ success: false, error: "No token" });
     }
 
     try {
-        const { id, isAdmin } = verify(token, process.env.JWT_REFRESH_SECRET);
+        const { userId, isAdmin } = verify(token, process.env.JWT_REFRESH_SECRET);
         return res.status(200).json({
             success: true,
-            token: createAccessToken(id, isAdmin)
+            token: createAccessToken(userId, isAdmin)
         });
     } catch (err) {
         console.log(err);

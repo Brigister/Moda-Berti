@@ -1,6 +1,7 @@
 const fs = require('fs');
 const pool = require('../config/database');
 const upload = require('../middleware/multer');
+const { queryPromise } = require('../utils/mysql-promise-wrapper');
 
 /**
  * 
@@ -8,9 +9,8 @@ const upload = require('../middleware/multer');
  * @route GET /api/products
  * @acces Public 
  */
-exports.getProducts = (req, res, next) => {
-    const sql = "SELECT * FROM products";
-    console.log(req.cookies.jid)
+exports.getAllProducts = (req, res, next) => {
+    const sql = "CALL products()"
     pool.query(sql, (error, results) => {
         if (error) {
             return res.status(500).json({
@@ -20,7 +20,7 @@ exports.getProducts = (req, res, next) => {
         }
         else return res.status(200).json({
             success: true,
-            data: results
+            data: JSON.parse(results[0][0].products)
         });
     });
 }
@@ -34,37 +34,8 @@ exports.getProducts = (req, res, next) => {
 exports.getProduct = async (req, res, next) => {
     const { id } = req.params;
     console.log(id);
-    /*     const sql = `SELECT * FROM products RIGHT JOIN sizes ON products.id = sizes.product_id WHERE products.id = ${pool.escape(id)}`;*/
     const sql = `CALL product_details(${id})`;
-    const sql2 = `SELECT json_object(
-		'id', p.id,
-		'article_id', p.article_id,
-		'name', p.name,
-		'brand', p.brand,
-		'gender', p.gender,
-		'collection', p.collection,
-		'price', p.price,
-		'image_url', p.image_url,
-		'sizes', (
-			SELECT json_arrayagg(json_object(
-                'id', s.id,
-				'size', s.size
-			))
-			FROM sizes as s
-			WHERE s.product_id = p.id
-		),
-		'descriptions', (
-			SELECT json_arrayagg(json_object(
-                'id', d.id,
-				'description', d.description
-			))
-			FROM descriptions as d
-			WHERE d.product_id = p.id
-		)
-	) as product_details
-	FROM products as p
-    WHERE p.id = ${pool.escape(id)}`
-    pool.query(sql2, (error, results) => {
+    pool.query(sql, (error, results) => {
         if (error) {
             return res.status(500).json({
                 success: false,
@@ -87,6 +58,27 @@ exports.getProduct = async (req, res, next) => {
     });
 }
 
+exports.getProductByGender = async (req, res, next) => {
+
+    const { gender, page } = req.query;
+    console.log(gender);
+    console.log(page)
+
+    const sql = `SELECT * FROM products WHERE gender = ${pool.escape(gender)} LIMIT 10 OFFSET ${pool.escape(page * 10)} `
+
+    const result = await queryPromise(pool, sql, gender).catch(error => {
+        return res.status(500).json({
+            success: false,
+            error
+        });
+    })
+
+    return res.status(200).json({
+        success: true,
+        data: result
+    })
+}
+
 /**
  * 
  * @desc Post a product
@@ -94,8 +86,8 @@ exports.getProduct = async (req, res, next) => {
  * @acces Private 
  */
 exports.postProduct = (req, res, next) => {
-
     upload(req, res, (err) => {
+        console.log(req.file)
         if (err) {
             return res.status(500).json({
                 success: false,
@@ -157,15 +149,18 @@ exports.postProduct = (req, res, next) => {
                                     });
                                 }
 
-                            });
+                                connection.commit();
 
+                                return res.status(200).json({
+                                    success: true,
+                                    data: newProduct = {
+                                        id: insertedId,
+                                        ...product
+                                    }
+                                })
+                            }
+                        );
                     });
-
-                    connection.commit();
-                    return res.status(200).json({
-                        success: true,
-                        data: product
-                    })
                 });
             });
         }
@@ -179,8 +174,8 @@ exports.postProduct = (req, res, next) => {
  * @acces Private 
  */
 exports.deleteProduct = (req, res, next) => {
-    const { id } = req.params;
-    console.log(req.body);
+    const { id, image_url } = req.body;
+
     const sql = `DELETE FROM products WHERE id = ${pool.escape(id)}`;
 
     pool.query(sql, (error, results) => {
@@ -192,10 +187,10 @@ exports.deleteProduct = (req, res, next) => {
         }
         else {
             console.log(results);
-            fs.unlinkSync(req.body.image_url);
+            fs.unlinkSync(image_url);
             return res.status(200).json({
                 success: true,
-                data: results
+                data: id
             });
         }
     });
@@ -207,7 +202,7 @@ exports.deleteProduct = (req, res, next) => {
  * @route Edit /api/products/:id
  * @acces Private 
  */
-exports.editProduct = (req, res, next) => {
+exports.editProduct = (req, res) => {
     const { id } = req.params;
     const { table } = req.body;
     delete req.body.table;
@@ -227,5 +222,10 @@ exports.editProduct = (req, res, next) => {
             data: results
         });
     })
+
+}
+
+exports.editSizes = (req, res) => {
+
 
 }

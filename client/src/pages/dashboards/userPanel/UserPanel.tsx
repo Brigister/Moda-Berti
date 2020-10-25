@@ -10,6 +10,7 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import styles from './userPanel.module.css';
 import { UserContext } from '../../../context/UserContext';
 import { LoggedUser } from '../../../interfaces/interfaces';
+import { Storage, ShoppingCart, Settings } from '@material-ui/icons';
 
 export const UserPanel: React.FC = () => {
     const { userId }: LoggedUser = useContext(UserContext);
@@ -21,13 +22,16 @@ export const UserPanel: React.FC = () => {
                 <Link to={`/userPanel/orderList`}>
                     <Card raised className={styles.card}>
                         <CardHeader title="Ordini" />
+                        <CardContent className={styles.cardContent}>
+                            <Storage style={{ fontSize: 150, color: "gray" }} />
+                        </CardContent>
                     </Card>
                 </Link>
                 <Link to={`/cart`}>
                     <Card raised className={styles.card}>
                         <CardHeader title="Carrello" />
                         <CardContent className={styles.cardContent}>
-                            <ShoppingCartIcon style={{ fontSize: 150, color: "gray" }} />
+                            <ShoppingCart style={{ fontSize: 150, color: "gray" }} />
                         </CardContent>
                     </Card>
                 </Link>
@@ -35,7 +39,7 @@ export const UserPanel: React.FC = () => {
                     <Card raised className={styles.card}>
                         <CardHeader title="Impostazioni" />
                         <CardContent className={styles.cardContent}>
-                            <SettingsIcon style={{ fontSize: 150, color: "gray" }} />
+                            <Settings style={{ fontSize: 150, color: "gray" }} />
                         </CardContent>
                     </Card>
                 </Link>

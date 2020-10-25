@@ -15,6 +15,7 @@ import api from '../../../../api/axiosIstance';
 import { UserContext } from '../../../../context/UserContext';
 import { LoggedUser } from '../../../../interfaces/interfaces';
 import { useMutation } from 'react-query';
+import { MyFormField } from '../../../../components/MyFormField';
 
 interface ChangePasswordForm {
     password: string,
@@ -33,8 +34,10 @@ export const ChangePassword: React.FC = () => {
     } */
 
     const [changePassword, { error }] = useMutation(async (data: ChangePasswordForm) => {
-        const res = await api.patch(`/api/auth/editPassword/${userId}`, data);
+        const res = await api.patch(`auth/editPassword`, data);
         console.log(res);
+
+        return res.data
     })
     const onSubmitHandler = handleSubmit(async (data) => {
         console.log('handler', data);
@@ -42,13 +45,12 @@ export const ChangePassword: React.FC = () => {
     })
     return (
         <form onSubmit={onSubmitHandler}>
-            <TextField className={styles.field}
-                inputRef={register}
+            <MyFormField
+                className={styles.field}
+                ref={register}
                 name="password"
                 label="Password attuale"
-                variant="outlined"
                 type={fieldType ? 'text' : 'password'}
-                required
                 autoFocus
                 InputProps={{
                     endAdornment:
@@ -64,13 +66,12 @@ export const ChangePassword: React.FC = () => {
                         </InputAdornment>
                 }}
             />
-            <TextField className={styles.field}
-                inputRef={register}
+            <MyFormField
+                className={styles.field}
+                ref={register}
                 name="newPassword"
-                variant="outlined"
                 label="Nuova password"
                 type={fieldType ? 'text' : 'password'}
-                required
                 InputProps={{
                     endAdornment:
                         < InputAdornment position="end">
@@ -85,6 +86,7 @@ export const ChangePassword: React.FC = () => {
                         </InputAdornment>
                 }}
             />
+
             <Button
                 type="submit"
                 variant="contained"

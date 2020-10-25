@@ -10,9 +10,25 @@
     margin-bottom: 10px;
 }
 
+.name {
+    font-size: 2em;
+}
+.brand, .fabric, .selectedSize {
+    font-size: 1.25em;
+}
+.price {
+    font-size: 1.5em;
+}
+
 .description{
     margin-bottom: 10px;
 }
 
+.active {
+    background-color: gold !important;
+}
 
-
+.chip {
+    margin: 5px !important;
+    font-size: 1.25em !important;
+}

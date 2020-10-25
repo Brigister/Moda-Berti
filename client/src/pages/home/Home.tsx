@@ -1,10 +1,10 @@
 import React from 'react'
+import { Shop } from '../shop/shop/Shop'
 
 export const Home: React.FC = () => {
     return (
         <div>
-            <h1>Moda Berti</h1>
-            <h3>L'imbarazzo della scelta</h3>
+            <Shop />
         </div>
     )
 }

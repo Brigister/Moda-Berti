@@ -8,9 +8,9 @@ const pool = require('../config/database');
  */
 exports.getUsers = (req, res, next) => {
 
-    const sql = "SELECT id, email, name, surname FROM users"
+    const sql = "SELECT id, email, name, surname, isAdmin, create_time FROM users"
 
-    pool.query(sql, (error, results, fields) => {
+    pool.query(sql, (error, results) => {
         if (error) {
             return res.status(500).json({
                 success: false,
@@ -19,7 +19,7 @@ exports.getUsers = (req, res, next) => {
         }
         else return res.status(200).json({
             success: true,
-            results,
+            data: results,
         })
     })
 }

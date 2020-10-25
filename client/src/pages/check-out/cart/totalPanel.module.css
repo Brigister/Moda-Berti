@@ -1,0 +1,27 @@
+.totalCard {
+    height: 300px;
+    width: 400px;
+}
+
+.totalCardHeader {
+    text-align: center;
+    font-size: 30px !important;
+}
+
+.totalCardContent {
+    text-align: center;
+    font-size: 20px;
+}
+
+.divider {
+    margin: 5% !important;
+}
+.button{
+    margin-top: 5% !important;
+    width: 70%;
+    height: 50px;
+}
+
+.buttonLabel {
+    font-size: 20px;
+}

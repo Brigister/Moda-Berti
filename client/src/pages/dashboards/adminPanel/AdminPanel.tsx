@@ -1,8 +1,9 @@
-import path from 'path'
 import React, { useState } from 'react'
 import { Switch, Route } from 'react-router-dom'
 import { AdminSidebar } from './adminSidebar/AdminSidebar'
+import { ManageOrders } from './manageOrders/ManageOrders'
 import { ManageProducts } from './manageProducts/ManageProducts'
+import { ManageUsers } from './manageUsers/ManageUsers'
 
 export const AdminPanel: React.FC = () => {
     const [open, setOpen] = useState(false);
@@ -22,7 +23,11 @@ export const AdminPanel: React.FC = () => {
                 <Route exact path="/adminPanel">
 
                 </Route>
-                <Route path="/adminPanel/products" component={ManageProducts} />
+                <Route exact path="/adminPanel/products" component={ManageProducts} />
+                <Route exact path="/adminPanel/orders" component={ManageOrders} />
+                <Route exact path="/adminPanel/users" component={ManageUsers} />
+
+
             </Switch>
         </div>
     )

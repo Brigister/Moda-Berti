@@ -1,107 +1,179 @@
 import React, { useState } from 'react';
-import { QueryResult, useQuery } from 'react-query';
-import axios from 'axios';
+import { QueryResult, useMutation, useQuery, useQueryCache } from 'react-query';
+import api from '../../../../api/axiosIstance';
 
 import {
-    TableContainer,
-    Table,
-    TableHead,
-    TableCell,
-    TableRow,
-    TableBody,
-    Paper,
-    Button
+    Button,
 } from '@material-ui/core';
+import { ColDef, DataGrid, RowData, RowsProp, ValueFormatterParams, ValueGetterParams } from '@material-ui/data-grid';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+
 import { AddProduct } from './addProduct/AddProduct';
 import { EditQuantity } from './editQuantity/EditQuantity';
 import { EditProduct } from './editProduct/EditProduct';
-import api from '../../../../api/axiosIstance';
-import { Product } from '../../../../interfaces/interfaces';
+import { AdminProductDetails, AdminSize, ISize, Product } from '../../../../interfaces/interfaces';
+import { Loading } from '../../../../components/Loading';
+
+interface DeleteProduct {
+    id: number,
+    image_url: string
+}
 
 export const ManageProducts: React.FC = () => {
-    const [open, setOpen] = useState(false);
+    const cache = useQueryCache();
+    const [openAddModal, setOpenAddModal] = useState(false);
+    const [openSizeModal, setOpenSizeModal] = useState(false);
+    const [id, setId] = useState<number>();
 
-
-    const { isLoading, error, data }: QueryResult<Product[], Error> = useQuery('products', () =>
-        api.get(`products`).then(res =>
-            res.data.data
+    const { isLoading, error, data }: QueryResult<AdminProductDetails[], Error> = useQuery('products', () =>
+        api.get(`products/all`).then(res =>
+            res.data.data.products
         )
-    )
-    const handleAddProduct = (): void => {
-        setOpen(!open);
-        console.log(open)
+    );
+
+    const [deleteProduct] = useMutation(async (data: any) => {
+        const res = await api.delete(`products`, {
+            data: data
+        })
+        return res.data;
+
+
+    }, {
+        onSuccess: (_, { id }) => {
+            const newData = data?.filter((product) => product.id != id)
+            cache.setQueryData('products', newData);
+        }
+    })
+    const handleBackdropAddProduct = (): void => {
+        setOpenAddModal(openAddModal);
+    }
+    const handleBackdropEditQuantity = (): void => {
+        setOpenSizeModal(!openSizeModal);
     }
 
-    const handleProductDelete = (id: number, image_url: string) => {
+    const handleDelete = async (id: number, image_url: string) => {
         const data = {
             id,
             image_url
         }
+        console.log(data);
+        await deleteProduct(data);
+
     }
+
+    const columns: ColDef[] = [
+        { field: 'id', headerName: 'Id', width: 150 },
+        { field: 'article_id', headerName: 'Articolo N°', width: 250 },
+        { field: 'name', headerName: 'Nome', width: 250 },
+        { field: 'brand', headerName: 'Brand', width: 250 },
+        { field: 'gender', headerName: 'Genere', width: 250 },
+        {
+            field: 'sizes.size',
+            headerName: 'Taglie',
+            width: 300,
+            renderCell: (param: ValueFormatterParams) => (
+                param.data.sizes.map(({ id, size, quantity }: AdminSize) =>
+                    <p key={id}>{size}:{quantity}</p>
+
+                )
+            )
+        },
+        {
+            field: 'price', headerName: 'Prezzo', width: 150, valueGetter: (params: ValueGetterParams) => `${(params.getValue("price")) as number / 100}€`
+        },
+        {
+            field: 'image_url',
+            headerName: 'Immagine',
+            width: 100,
+            renderCell: (params: ValueFormatterParams) => (
+                <img src={`http://localhost:4000/${params.getValue('image_url')}`} />
+            )
+        },
+        {
+            field: 'edit',
+            headerName: 'Modifica',
+            renderCell: (params: ValueGetterParams) => (
+                <EditIcon
+                    cursor="pointer"
+                    onClick={() => {
+                        setOpenSizeModal(true)
+                        setId(params.rowIndex)
+                    }}
+                />)
+
+        },
+        {
+            field: 'descriptions',
+            headerName: 'Descrizioni',
+            renderCell: (params: ValueGetterParams) => (
+                <EditIcon
+                    cursor="pointer"
+                />)
+
+        },
+
+        {
+            field: 'delete',
+            headerName: 'Elimina',
+            renderCell: (params: ValueGetterParams) => (
+                <DeleteIcon
+                    cursor="pointer"
+                    onClick={() => handleDelete(params.getValue('id') as number, params.getValue('image_url') as string)} />
+            )
+        }
+
+    ]
+
+    if (!data) return <h3>No data</h3>
+    if (error) return <h3>Errore: {error.message}</h3>
 
     return (
         <div>
-
-            {/*             <AddProduct />
- */}            <Button
-                onClick={() => setOpen(true)}
+            <Button
+                onClick={() => setOpenAddModal(true)}
                 variant="contained"
                 color="primary"
             >
                 Aggiungi Prodotto
             </Button>
 
-            {open ? <AddProduct clicked={open} handleAddProduct={handleAddProduct} /> : <></>}
+            {openAddModal
+                ?
+                <AddProduct
+                    clicked={openAddModal}
+                    handleBackdropAddProduct={handleBackdropAddProduct}
+                />
+                :
+                <></>
+            }
+
+            {openSizeModal
+                ?
+                <EditQuantity
+                    id={id!}
+                    sizes={data[id!].sizes}
+                    clicked={openSizeModal}
+                    handleBackdropEditQuantity={handleBackdropEditQuantity}
+                />
+                :
+                <></>
+            }
+            {id}
+
             <h1>Prodotti</h1>
-            <TableContainer component={Paper}>
-                <Table aria-label="tabella dei prodotti">
-                    <TableHead>
-                        <TableRow>
-
-                            <TableCell>Nome</TableCell>
-                            <TableCell>ID</TableCell>
-                            <TableCell >Foto</TableCell>
-                            <TableCell >Brand</TableCell>
-                            <TableCell >Prezzo</TableCell>
-                            {/* <TableCell>Disponibilità</TableCell> */}
-                            <TableCell >Azioni</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {data && data.map((product) => (
-                            <TableRow key={product.id}>
-                                <TableCell component="th" scope="row">
-                                    {product.name}
-                                </TableCell>
-                                <TableCell>{product.id}</TableCell>
-                                <TableCell>
-                                    <img width="100px" src={`http://localhost:4000/${product.image_url}`} alt={product.name} />
-                                </TableCell>
-                                <TableCell >{product.brand}</TableCell>
-                                <TableCell >{product.price ? `${product.price / 100}€` : 'prezzo non disponibile'}</TableCell>
-                                {/* <TableCell>{product.sizes.map(size => <p key={size.size}>{size.size}: {size.quantity}</p>)}</TableCell> */}
-                                <TableCell >
-                                    <Button
-                                        onClick={() => handleProductDelete(product.id, product.image_url)}
-                                        variant="contained"
-                                        color="secondary"
-                                    >
-                                        Elimina
-                                    </Button>
-                                    <EditProduct
-                                        id={product.id}
-                                        name={product.name}
-                                        brand={product.brand}
-                                        price={product.price}
-                                    />
-                                    <EditQuantity id={product.id} />
-                                </TableCell>
-
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <DataGrid
+                columns={columns}
+                rows={data}
+                rowHeight={80}
+                pageSize={10}
+                rowsPerPageOptions={[5, 10, 20]}
+                autoHeight
+                loading={isLoading}
+                components={{
+                    loadingOverlay: Loading
+                }}
+            />
         </div>
     )
 }

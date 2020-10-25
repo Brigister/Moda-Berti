@@ -8,4 +8,5 @@ p, h3 {
     display: flex;
     width: 80%;
     margin-bottom: 10px;
+    background-color: lightgray !important;
 }

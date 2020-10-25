@@ -18,6 +18,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import { StoreMallDirectoryOutlined } from '@material-ui/icons';
+import StorageIcon from '@material-ui/icons/Storage';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+
 import { Link } from 'react-router-dom';
 
 const drawerWidth = "2000";
@@ -60,9 +63,6 @@ interface AdminSidebarProps {
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({ open, handleDrawer }) => {
     const classes = useStyles();
     const theme = useTheme();
-    /*     const [open, setOpen] = useState(false);
-     */
-
 
     return (
         <div className={classes.root}>
@@ -111,28 +111,28 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ open, handleDrawer }
                         </ListItem>
                     </Link>
                     <Divider />
-                    <Link to="/adminPanel/products">
+                    <Link to="/adminPanel/orders">
                         <ListItem  >
                             <ListItemIcon>
-                                <StoreMallDirectoryOutlined />
+                                <StorageIcon />
                             </ListItemIcon>
-                            <ListItemText primary="Prodotti" />
+                            <ListItemText primary="Ordini" />
+                        </ListItem>
+                    </Link>
+                    <Divider />
+                    <Link to="/adminPanel/users">
+                        <ListItem  >
+                            <ListItemIcon>
+                                <PeopleAltIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Utenti" />
                         </ListItem>
                     </Link>
                     <Divider />
                     <Link to="/adminPanel/products">
                         <ListItem  >
                             <ListItemIcon>
-                                <StoreMallDirectoryOutlined />
-                            </ListItemIcon>
-                            <ListItemText primary="Prodotti" />
-                        </ListItem>
-                    </Link>
-                    <Divider />
-                    <Link to="/adminPanel/products">
-                        <ListItem  >
-                            <ListItemIcon>
-                                <StoreMallDirectoryOutlined />
+                                <PeopleAltIcon />
                             </ListItemIcon>
                             <ListItemText primary="Prodotti" />
                         </ListItem>

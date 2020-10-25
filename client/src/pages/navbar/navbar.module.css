@@ -2,6 +2,8 @@
     all: unset;
     color: white;
     cursor: pointer;
+    margin-left: 15px;
+    margin-right: 15px;
 }
 
 .container{
@@ -9,10 +11,14 @@
     justify-content: space-between;
 }
 
+/* .routes {
+    display: flex;
+    justify-content: space-between;
+} */
+
 .route { 
     all: unset;
-    margin-right: 30px;
-
+    flex-basis: auto;
 }
 
 .active{

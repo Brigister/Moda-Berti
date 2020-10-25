@@ -1,23 +1,18 @@
-import { TextField, } from '@material-ui/core'
-import React, { InputHTMLAttributes } from 'react'
+import { TextField, TextFieldProps, } from '@material-ui/core'
+import React, { forwardRef, InputHTMLAttributes } from 'react'
 
-type FormFieldProps = {
+type FormFieldProps = TextFieldProps & {
     name: string,
     label: string
-    register: any
 
 }
-//???
-export const MyFormField: React.FC<FormFieldProps> = ({ name, label, register, ...props }) => {
+export const MyFormField: React.FC<any> = forwardRef((props, ref) => {
     return (
         <TextField
-            name={name}
-            label={label}
-            inputRef={register}
+            inputRef={ref}
             variant="outlined"
-            autoFocus
             required
             {...props}
         />
     )
-}
+})

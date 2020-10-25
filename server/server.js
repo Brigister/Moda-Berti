@@ -6,21 +6,18 @@ const dotenv = require('dotenv');
 const session = require('express-session');
 /* const MySQLStore = require('express-mysql-session')(session); */
 
-const connectDB = require('./config/mongo');
 
 /* const sessionStore = new MySQLStore({}), pool); */
 
 dotenv.config({ path: "./config/.env" });
 
-connectDB();
 
 const app = express();
 
-app.use(session({
+/* app.use(session({
     name: "pippo",
-    /* key: process.env.KEY */
     secret: process.env.SECRET,
-    /* store: sessionStore, */ //da fare con redis in prod ?
+    //store: sessionStore, //da fare con redis in prod ?
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -29,7 +26,7 @@ app.use(session({
         sameSite: "lax",
         secure: false //true per https
     }
-}))
+})) */
 
 const corsOptions = {
     origin: true,

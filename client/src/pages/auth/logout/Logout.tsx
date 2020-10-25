@@ -17,6 +17,7 @@ export const Logout = () => {
             if (success) {
                 setUser({
                     token: '',
+                    userId: undefined,
                     isLoggedIn: false,
                     isAdmin: false
                 });

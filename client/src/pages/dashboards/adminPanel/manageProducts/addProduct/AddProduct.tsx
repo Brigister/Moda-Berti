@@ -9,26 +9,58 @@ import {
 } from '@material-ui/core'
 
 import styles from './addProduct.module.css'
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, ArrayField } from 'react-hook-form';
+import { MyFormField } from '../../../../../components/MyFormField';
+import { useMutation, useQueryCache } from 'react-query';
+import { Product, ProductDetails } from '../../../../../interfaces/interfaces';
+import api from '../../../../../api/axiosIstance';
 
 interface AddProductProps {
-    clicked: boolean,
-    handleAddProduct: () => void
+    clicked: boolean;
+    handleBackdropAddProduct: () => void;
 }
 
-export const AddProduct: React.FC<AddProductProps> = ({ clicked, handleAddProduct }) => {
-    const { register, handleSubmit, control } = useForm();
+interface AddProduct {
+    name: string,
+    image: File,
+    brand: string,
+    price: number
+    sizes?: {
+        size: string
+    }[]
+}
+
+
+export const AddProduct: React.FC<AddProductProps> = ({ clicked, handleBackdropAddProduct }) => {
+    const cache = useQueryCache();
+    const { register, handleSubmit, control } = useForm<AddProduct>();
 
     const { fields, append, remove } = useFieldArray({
         control,
         name: "sizes"
     })
 
-    const handleModal = () => {
-/*         setOpen(!open);
- */    }
 
-    const onSubmit = (data: any) => {
+    const [addProduct] = useMutation(async (data: FormData) => {
+        console.log('formdata', data);
+
+        const res = await api.post('products', data, {
+            headers: {
+                'content-type': undefined
+            }
+        });
+        return res.data;
+    }, {
+        onSuccess: ({ data }: { data: Product }, variables) => {
+            console.log(data);
+            const products = cache.getQueryData('products');
+            const newProducts = [...products as Product[], data]
+            cache.setQueryData('products', newProducts)
+        }
+    });
+
+    const onSubmit = async (data: any) => {
+        console.log(data.image[0])
         let fd = new FormData()
         fd.append("name", data.name);
         fd.append("brand", data.brand);
@@ -40,16 +72,18 @@ export const AddProduct: React.FC<AddProductProps> = ({ clicked, handleAddProduc
 
         console.log(fd);
 
-        const nome = fd.get("sizes");
+        const nome = fd.get("image");
         console.log(data);
         console.log(nome);
+
+        await addProduct(fd);
     }
 
     return (
 
         <Dialog
             open={clicked}
-            onBackdropClick={handleAddProduct}
+            onBackdropClick={handleBackdropAddProduct}
             className={styles.dialog}
             fullWidth
             maxWidth="md"
@@ -57,47 +91,36 @@ export const AddProduct: React.FC<AddProductProps> = ({ clicked, handleAddProduc
             <DialogTitle>Aggiungi un Prodotto</DialogTitle>
             <DialogContent>
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <TextField className={styles.field}
-                        inputRef={register}
+                    <MyFormField
+                        ref={register}
                         name="name"
-                        variant="outlined"
                         label="Nome Prodotto"
                         autoFocus
-                        required
                     />
 
-                    <TextField
-                        inputRef={register}
-                        type="file"
+                    <MyFormField
+                        ref={register}
                         name="image"
-                        variant="outlined"
-                        required
-                        className={styles.field}
+                        type='file'
+                    />
 
-                    />
-                    <TextField
-                        inputRef={register}
+                    <MyFormField
+                        ref={register}
                         name="brand"
-                        variant="outlined"
                         label="Brand"
-                        required
-                        className={styles.field}
                     />
-                    <TextField
-                        inputRef={register}
+
+                    <MyFormField inputRef={register}
                         name="price"
-                        variant="outlined"
                         label="Prezzo"
                         InputProps={{
                             startAdornment:
                                 <InputAdornment position="start">€</InputAdornment>
 
                         }}
-                        required
-                        className={styles.field}
                     />
 
-                    {fields.map((field, index) => (
+                    {fields && fields.map((field, index) => (
                         <div key={field.id}>
                             <TextField
 
@@ -117,9 +140,9 @@ export const AddProduct: React.FC<AddProductProps> = ({ clicked, handleAddProduc
                         </div>
 
                     ))}
-                    {/* <Button variant="contained" color="primary" onClick={() => append()}>
+                    <Button variant="contained" color="primary" onClick={() => append({ size: 'size' })}>
                         Aggiungi taglia
-                                </Button> */}
+                    </Button>
 
                     <Button
                         type="submit"

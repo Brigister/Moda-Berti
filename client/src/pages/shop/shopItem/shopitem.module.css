@@ -1,4 +1,14 @@
 .item {
+    width: 300px;
+}
+
+.card_image {
     height: 400px;
 }
 
+.price {
+    padding: 0px !important;
+    padding-top: 15px !important;
+    text-align: center;
+    font-size: 1.5em;
+}

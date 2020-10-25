@@ -2,21 +2,28 @@ const express = require('express');
 const router = express.Router();
 
 const {
-    getProducts,
+    getAllProducts,
     getProduct,
     postProduct,
     deleteProduct,
     editProduct,
-    addDescription
+    addDescription,
+    getProductByGender
 } = require('../controllers/products');
 
 router.route('/')
-    .get(getProducts)
-    .post(postProduct);
+    .get(getProductByGender)
+    .post(postProduct)
+    .delete(deleteProduct);
+
+router.route('/all')
+    .get(getAllProducts);
 
 router.route('/:id')
     .get(getProduct)
-    .delete(deleteProduct)
+
     .patch(editProduct);
+
+
 
 module.exports = router;

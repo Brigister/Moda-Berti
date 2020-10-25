@@ -1,28 +1,36 @@
-const Cart = require('../models/cart');
 const pool = require('../config/database');
-const cart = require('../models/cart');
 
 /**
  * @desc get a cart based on userId
  * @router GET /api/cart/:id
  * @access ?
  */
-exports.getUserCart = (req, res,) => {
-    const { id } = req.params;
-
-    const sql = `SELECT * FROM orders JOIN order_items ON orders.id = order_items.order_id WHERE status = 'cart' && orders.user_id  = ${pool.escape(id)}`
+exports.getUserCart = (req, res) => {
+    const { userId } = req.userData;
+    console.log(userId)
+    const sql = `CALL cart_details(${pool.escape(userId)})`
 
     pool.query(sql, (error, results) => {
         if (error) {
+            console.log('errore');
             return res.status(500).json({
                 succes: false,
                 error
             });
         }
-        else return res.status(200).json({
-            succes: true,
-            data: results
-        });
+        else {
+            if (results[0][0]) {
+                const parsed = JSON.parse(results[0][0].cart);
+                return res.status(200).json({
+                    succes: true,
+                    data: parsed
+                });
+            }
+            else return res.status(404).json({
+                succes: false,
+                error: "Non c'è un carello"
+            })
+        }
     })
 }
 
@@ -34,9 +42,17 @@ exports.getUserCart = (req, res,) => {
 exports.insertProduct = async (req, res, next) => {
     console.log(req.body)
 
-    const { id } = req.params;
-    const checkCart = `SELECT id FROM orders WHERE user_id = ${pool.escape(id)} AND status ='cart'`;
-    const createCart = `INSERT INTO orders (user_id) VALUES (${pool.escape(id)})`;
+    const { userId } = req.userData;
+    console.log(userId);
+    const checkCart = `SELECT id FROM orders WHERE user_id = ${pool.escape(userId)} AND status ='cart'`;
+    const createCart = `INSERT INTO orders (user_id) VALUES (${pool.escape(userId)})`;
+
+    if (!req.body.size || !req.body.product_id) {
+        return res.status(500).json({
+            succes: false,
+            error: "Missing data"
+        })
+    }
 
     pool.getConnection((err, connection) => {
         if (err) {
@@ -74,8 +90,9 @@ exports.insertProduct = async (req, res, next) => {
                                 });
                             }
                             console.log("non c'era carello")
-
-                            const addToCart = `INSERT INTO order_items SET order_id=${results.insertId}, ${pool.escape(req.body)}`;
+                            console.log(results.insertId);
+                            const addToCart = `INSERT INTO order_items SET order_id=${pool.escape(results.insertId)}, ${pool.escape(req.body)}`;
+                            console.log(addToCart);
                             connection.query(addToCart, (error, results) => {
                                 if (error) {
                                     connection.rollback();
@@ -86,6 +103,7 @@ exports.insertProduct = async (req, res, next) => {
                                 }
                                 else {
                                     connection.commit();
+                                    console.log("prodotto aggiunto");
                                     return res.status(200).json({
                                         succes: true,
                                         data: results
@@ -131,7 +149,7 @@ exports.insertProduct = async (req, res, next) => {
 exports.removeFromCart = async (req, res,) => {
     //id = id dell'entry del cart da rimuovere
     const { id } = req.params;
-
+    console.log(id);
     const sql = `DELETE FROM order_items WHERE id = ${pool.escape(id)}`;
 
     pool.query(sql, (error, results) => {
@@ -154,11 +172,12 @@ exports.removeFromCart = async (req, res,) => {
  * @access Private
  */
 exports.deleteUserCart = async (req, res,) => {
-    const { id } = req.params;
+    const { userId } = req.userData;
 
-    const sql = `DELETE FROM orders WHERE status = 'cart' AND user_id = ${pool.escape(id)}`;
+    const sql = `DELETE FROM orders WHERE status = 'cart' AND user_id = ${pool.escape(userId)}`;
 
     pool.query(sql, (error, results) => {
+        console.log('rimosso carello');
         if (error) {
             return res.status(500).json({
                 succes: false,
