@@ -2,7 +2,7 @@ import { AxiosError } from 'axios';
 import React, { useEffect } from 'react'
 import { QueryResult, useQuery } from 'react-query';
 import api from '../../../../api/axiosIstance'
-import { Loading } from '../../../../components/Loading';
+import { Loading } from '../../../../components/loading/Loading';
 import { Order } from '../../../../interfaces/interfaces';
 import { OrderItem } from './OrderItem';
 

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 
@@ -6,7 +6,7 @@ import { Navbar } from './pages/navbar/Navbar';
 import { Footer } from './pages/footer/Footer';
 
 import { Home } from './pages/home/Home';
-import { Shop } from './pages/shop/shop/Shop';
+import { Shop } from './pages/home/shop/Shop';
 import { ShopList } from './pages/shop/shoplist/ShopList';
 import { Stripe } from './pages/check-out/stripe/Stripe';
 import { About } from './pages/about/About';
@@ -22,15 +22,23 @@ import { OrderList } from './pages/dashboards/userPanel/orders/OrderList';
 import { Settings } from './pages/dashboards/userPanel/settings/Settings';
 import { ChangePassword } from './pages/dashboards/userPanel/settings/ChangePassword';
 import { UserContext } from './context/UserContext';
-import { QueryResult, useMutation, useQuery } from 'react-query';
+import { useQuery } from 'react-query';
 import decode from 'jwt-decode';
 import api from './api/axiosIstance';
 import { LoggedUser, Token } from './interfaces/interfaces';
 import { Brands } from './pages/brands/Brands';
+import { ForgotPassword } from './pages/auth/forgotPassword/ForgotPassword';
+import { MobileDrawer } from './pages/navbar/mobileDrawer/MobileDrawer';
 
 export const Router: React.FC = () => {
     const { user, setUser } = useContext(UserContext)
     const { token, isLoggedIn, isAdmin }: LoggedUser = user;
+
+    const [openMobile, setOpenMobile] = useState(false)
+
+    const openMobileDrawer = () => {
+        setOpenMobile(!openMobile);
+    }
 
     api.interceptors.request.use(
         config => {
@@ -54,15 +62,16 @@ export const Router: React.FC = () => {
                 isAdmin
             })
         }), {
-        staleTime: 1000 * 60 * 15,
-        refetchInterval: 1000 * 60 * 15,
+        staleTime: 1000 * 60 * 14,
+        refetchInterval: 1000 * 60 * 14,
         refetchOnReconnect: true,
         refetchOnMount: true,
     }
     );
     return (
         <BrowserRouter>
-            <Navbar />
+            <Navbar openMobile={openMobile} setOpenMobile={openMobileDrawer} />
+            <MobileDrawer openMobile={openMobile} setOpenMobile={openMobileDrawer} />
             {/* ROMPE TUTTO LO SWITCH */}
             {/* <Switch> */}
             <Route exact path="/" component={Home} />
@@ -101,14 +110,11 @@ export const Router: React.FC = () => {
                 </>
             }
 
-            <Route path="/resetPassword" component={Login} />
+            <Route path="/forgotPassword" component={ForgotPassword} />
             <Route path="/stripe" component={Stripe} />
 
             {/* <Route path="*" render={() => <h1>404 not found</h1>} /> */}
             {/*  </Switch> */}
-            <hr></hr>
-            <p>{isAdmin ? "sei admin" : "non sei admin"}</p>
-            <p>{isLoggedIn ? "sei loggato" : "non sei loggato"}</p>
             <Footer />
         </BrowserRouter>
     )

@@ -1,16 +1,17 @@
-import React, { useContext } from 'react'
-
-import { Button, Card, CardActionArea, CardContent, CardHeader, CardMedia, Divider, Grid, Paper } from '@material-ui/core';
-import { UserContext } from '../../../context/UserContext';
-import { OrderProduct, LoggedUser, Order } from '../../../interfaces/interfaces';
-
-import styles from './cartItem.module.css';
+import React from 'react'
 import { useMutation, useQueryCache } from 'react-query';
+import { Button, Card, CardContent, CardHeader, CardMedia, Grid } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
+import { OrderProduct } from '../../../interfaces/interfaces';
 import api from '../../../api/axiosIstance';
 import { priceFormatter } from '../../../utils/priceFormatter';
 
+import styles from './cartItem.module.css';
+import { Link } from 'react-router-dom';
+
 export const CartItem: React.FC<OrderProduct> = ({
     id,
+    product_id,
     image_url,
     name,
     brand,
@@ -18,13 +19,12 @@ export const CartItem: React.FC<OrderProduct> = ({
     size
 }) => {
     const cache = useQueryCache();
-
+    console.log(product_id)
     const [deleteCart] = useMutation(async () => {
         const res = await api.delete('cart');
         return res.data;
     })
     const [deleteItem] = useMutation(async (id: number) => {
-        console.log(id);
         const res = await api.patch(`cart/${id}`);
         return res.data;
     }, {
@@ -43,34 +43,39 @@ export const CartItem: React.FC<OrderProduct> = ({
     })
 
     return (
-        <Card raised classes={{ root: styles.itemCard }}>
-            <Grid item container >
-                <Grid item>
-                    <CardMedia
-                        style={{ height: 150, width: 100 }}
-                        title={name}
-                        component="img"
-                        src={`http://localhost:4000/${image_url}`}
-                    />
-                </Grid>
+        <Grid item container >
+            <Card raised classes={{ root: styles.itemCard }}>
+                <Grid item container>
+                    <Grid item xs={3}>
+                        <Link to={`shop/product/${product_id}`}>
+                            <CardMedia
+                                style={{ height: 197, width: 100 }}
+                                title={name}
+                                component="img"
+                                src={`http://localhost:4000/${image_url}`}
+                                alt={name}
+                            />
+                        </Link>
+                    </Grid>
 
-                <Grid item>
-                    <CardHeader title={name} />
-                    <CardContent>
-                        <p>Brand: {brand}</p>
-                        <p>Size: {size}</p>
-                        <p>Prezzo: {priceFormatter(price)}€</p>
-                    </CardContent>
+                    <Grid item xs={8}>
+                        <CardHeader title={name} />
+                        <CardContent>
+                            <p>Brand: {brand}</p>
+                            <p>Taglia: {size}</p>
+                            <p>Prezzo: {priceFormatter(price)}€</p>
+                        </CardContent>
+                    </Grid>
+                    <Grid item xs={1}>
+                        <DeleteIcon
+                            fontSize="large"
+                            cursor="pointer"
+                            classes={{ root: styles.delete }}
+                            onClick={async () => await deleteItem(id)}
+                        />
+                    </Grid>
                 </Grid>
-                <Grid item >
-                    <Button
-                        classes={{ root: styles.button }}
-                        variant="contained"
-                        color="secondary"
-                        onClick={async () => await deleteItem(id)}
-                    >Elimina</Button>
-                </Grid>
-            </Grid>
-        </Card>
+            </Card>
+        </Grid>
     )
 }

@@ -1,6 +1,8 @@
 import { Grid, Button, Card, CardHeader, CardContent, Divider } from '@material-ui/core'
 import React from 'react'
 import { useHistory } from 'react-router-dom';
+import { priceFormatter } from '../../../utils/priceFormatter';
+import { Shipping } from './Shipping';
 
 import styles from './totalPanel.module.css'
 
@@ -30,13 +32,13 @@ export const TotalPanel: React.FC<TotalPanelProps> = ({ total }) => {
                             <p>Subtotale</p>
                         </Grid>
                         <Grid item xs={6}>
-                            <p>{total / 100}€</p>
+                            <p>{priceFormatter(total)}€</p>
                         </Grid>
                         <Grid item xs={6}>
                             <p>Spedizione</p>
                         </Grid>
                         <Grid item xs={6}>
-                            <p> 0€</p>
+                            <p> {total < 5000 ? priceFormatter(500) : 0}€</p>
                         </Grid>
                     </Grid>
                     <Divider classes={{ root: styles.divider }} />
@@ -45,7 +47,7 @@ export const TotalPanel: React.FC<TotalPanelProps> = ({ total }) => {
                             <p><strong>Totale</strong></p>
                         </Grid>
                         <Grid item xs={6}>
-                            <p><strong>{total / 100}€</strong></p>
+                            <p><strong>{total < 5000 ? priceFormatter(total + 500) : priceFormatter(total)}€</strong></p>
                         </Grid>
                     </Grid>
                     <Button
@@ -56,6 +58,7 @@ export const TotalPanel: React.FC<TotalPanelProps> = ({ total }) => {
                     >Procedi</Button>
                 </CardContent>
             </Card>
+            <Shipping />
         </Grid>
     )
 }

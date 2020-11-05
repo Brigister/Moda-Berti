@@ -7,10 +7,10 @@ const checkAuth = require('../middleware/checkAuth');
 
 router.route("/")
     .get(checkAuth, checkAdmin, getPendingOrders)
-    .post(postOrder);
+    .post(checkAuth, postOrder);
 
 router.route('/:id')
-    .delete(deleteOrder);
+    .delete(checkAuth, deleteOrder);
 
 router.route('/personal')
     .get(checkAuth, getUserOrders);

@@ -3,12 +3,13 @@ import { Grid, Paper } from '@material-ui/core';
 import { CartItem } from './CartItem';
 import { QueryResult, useMutation, useQuery } from 'react-query';
 import api from '../../../api/axiosIstance';
-import { Loading } from '../../../components/Loading';
+import { Loading } from '../../../components/loading/Loading';
 import { TotalPanel } from './TotalPanel';
 import { Order } from '../../../interfaces/interfaces';
 
 import styles from './cart.module.css'
 import { Link } from 'react-router-dom';
+import { Shipping } from './Shipping';
 
 export const Cart: React.FC = () => {
     /* const [deleteCart] = useMutation(async () => {
@@ -41,18 +42,19 @@ export const Cart: React.FC = () => {
         </>
     )
 
-
+    const height = (data.products.length) * 202
     const total = data.products.reduce((total, product) => total + product.price, 0);
 
     return (
         <Grid container justify="space-evenly" classes={{ root: styles.container }}>
             <Grid
                 item
-                xs={12}
-                sm={8}
                 container
+                xs={12}
+                sm={4}
+                justify="center"
             >
-                <Paper classes={{ root: styles.root }}>
+                <Paper classes={{ root: styles.root }} style={{ height: height }}>
                     {data.products.map((product) =>
                         <CartItem key={product.id} {...product} />
                     )}

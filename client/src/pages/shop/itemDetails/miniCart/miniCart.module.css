@@ -1,0 +1,11 @@
+.itemCard {
+    width: 300px;
+}
+.itemCardImage {
+    height: 120px;
+    width: 60px !important;
+}
+
+.itemCardContent {
+    font-size: 0.91em;
+}

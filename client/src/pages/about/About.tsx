@@ -10,7 +10,7 @@ export const About: React.FC = () => {
     return (
 
         <Grid container spacing={6} justify="center" alignItems="center" style={{ marginTop: "1%" }}>
-            <Grid item xs={4} >
+            <Grid item xs={12} sm={5} >
                 <Card raised>
                     <CardHeader title="La nostra storia" style={{ textAlign: "center" }} />
                     <CardContent>
@@ -19,11 +19,14 @@ export const About: React.FC = () => {
                         Il negozio si trova in via Beccaria 111, a 3 min dall'area commerciale di Marghera
                         e propone un vasto assortimento di vestiti uomo, donna e bambino per tutte le tasche. </p>
                     </CardContent>
-
                 </Card>
-
             </Grid>
-            <Grid item xs={4}>
+
+            <Grid item xs={12} sm={5}>
+                <img src={require('../../assets/storia.jpeg')} alt="Immagine storica del negozio" style={{ borderRadius: 5 }} />
+            </Grid>
+
+            <Grid item xs={12} sm={5}>
                 <iframe
                     width="600"
                     height="450"

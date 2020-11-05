@@ -6,6 +6,7 @@ import {
     Button,
 } from '@material-ui/core';
 import { ColDef, DataGrid, RowData, RowsProp, ValueFormatterParams, ValueGetterParams } from '@material-ui/data-grid';
+import PhotoLibraryIcon from '@material-ui/icons/PhotoLibrary';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
@@ -13,7 +14,7 @@ import { AddProduct } from './addProduct/AddProduct';
 import { EditQuantity } from './editQuantity/EditQuantity';
 import { EditProduct } from './editProduct/EditProduct';
 import { AdminProductDetails, AdminSize, ISize, Product } from '../../../../interfaces/interfaces';
-import { Loading } from '../../../../components/Loading';
+import { Loading } from '../../../../components/loading/Loading';
 
 interface DeleteProduct {
     id: number,
@@ -48,7 +49,7 @@ export const ManageProducts: React.FC = () => {
     const handleBackdropAddProduct = (): void => {
         setOpenAddModal(openAddModal);
     }
-    const handleBackdropEditQuantity = (): void => {
+    const closeEditQuantity = (): void => {
         setOpenSizeModal(!openSizeModal);
     }
 
@@ -63,15 +64,14 @@ export const ManageProducts: React.FC = () => {
     }
 
     const columns: ColDef[] = [
-        { field: 'id', headerName: 'Id', width: 150 },
-        { field: 'article_id', headerName: 'Articolo N°', width: 250 },
+        { field: 'id', headerName: 'Id' },
         { field: 'name', headerName: 'Nome', width: 250 },
-        { field: 'brand', headerName: 'Brand', width: 250 },
-        { field: 'gender', headerName: 'Genere', width: 250 },
+        { field: 'brand', headerName: 'Brand', width: 200 },
+        { field: 'gender', headerName: 'Genere', width: 200 },
         {
             field: 'sizes.size',
             headerName: 'Taglie',
-            width: 300,
+            width: 250,
             renderCell: (param: ValueFormatterParams) => (
                 param.data.sizes.map(({ id, size, quantity }: AdminSize) =>
                     <p key={id}>{size}:{quantity}</p>
@@ -98,21 +98,21 @@ export const ManageProducts: React.FC = () => {
                     cursor="pointer"
                     onClick={() => {
                         setOpenSizeModal(true)
-                        setId(params.rowIndex)
+                        setId(params.getValue('id') as number)
                     }}
                 />)
 
         },
         {
-            field: 'descriptions',
-            headerName: 'Descrizioni',
+            field: 'addPhotos',
+            headerName: 'Foto',
             renderCell: (params: ValueGetterParams) => (
-                <EditIcon
+                <PhotoLibraryIcon
                     cursor="pointer"
+                    onClick={() => console.log('titi')}
                 />)
 
         },
-
         {
             field: 'delete',
             headerName: 'Elimina',
@@ -152,9 +152,10 @@ export const ManageProducts: React.FC = () => {
                 ?
                 <EditQuantity
                     id={id!}
-                    sizes={data[id!].sizes}
+                    /*                     product={data.filter(product => product.id === id)}*/
+                    product={data.find(product => product.id === id)}
                     clicked={openSizeModal}
-                    handleBackdropEditQuantity={handleBackdropEditQuantity}
+                    closeEditQuantity={closeEditQuantity}
                 />
                 :
                 <></>

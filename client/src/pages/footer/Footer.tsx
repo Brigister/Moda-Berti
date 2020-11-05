@@ -1,5 +1,5 @@
 import React from 'react';
-import { Divider, Grid } from '@material-ui/core';
+import { Divider, Grid, Hidden } from '@material-ui/core';
 
 import FacebookIcon from '@material-ui/icons/Facebook';
 import InstagramIcon from '@material-ui/icons/Instagram';
@@ -17,8 +17,9 @@ export const Footer: React.FC = () => {
                 <Grid
                     item
                     container
-                    xs={4}
-                    justify="flex-start"
+                    xs={12}
+                    sm={3}
+                    justify="center"
                     alignItems="center"
                     direction="column"
                 >
@@ -75,10 +76,14 @@ export const Footer: React.FC = () => {
                 </Grid>
 
                 <Divider orientation="vertical" flexItem classes={{ root: styles.divider }} />
+                <Hidden smUp>
+                    <Divider classes={{ root: styles.divider }} />
+                </Hidden>
                 <Grid
                     item
                     container
-                    xs={4}
+                    xs={12}
+                    sm={3}
                     direction="column"
                     alignItems="center"
                     justify="center"
@@ -86,40 +91,30 @@ export const Footer: React.FC = () => {
                     <Grid item>
                         <h3>Contatti</h3>
                     </Grid>
-                    <Grid item container xs={3}>
-                        <Grid item>
-                            <PhoneIcon fontSize="small" />
-                        </Grid>
-                        <Grid item>
-                            <a href="tel:+39041921705" className={styles.link}>041921705</a>
-                        </Grid>
+                    <Grid item xs={12}>
+                        <PhoneIcon fontSize="small" />
+                        <a href="tel:+39041921705" className={styles.link}>041921705</a>
                     </Grid>
-                    <Grid item container xs={3}>
-                        <Grid item>
-                            <EmailIcon fontSize="small" />
-                        </Grid>
-                        <Grid item>
-                            <a href="mailto:info@modaberti.it" className={styles.link}>info@modaberti.it</a>
-                        </Grid>
+                    <Grid item xs={12}>
+                        <EmailIcon fontSize="small" />
+                        <a href="mailto:info@modaberti.it" className={styles.link}>info@modaberti.it</a>
                     </Grid>
-                    <Grid item container xs={3}>
-                        <Grid item>
-                            <MapIcon fontSize="small" />
-                        </Grid>
-                        <Grid item>
-                            <p className={styles.text}>Via Beccaria 111</p>
-                        </Grid>
-
+                    <Grid item xs={12}>
+                        <p className={styles.text}>Via Cesare Beccaria 111 - Marghera VE</p>
                     </Grid>
                 </Grid>
 
                 <Divider orientation="vertical" flexItem classes={{ root: styles.divider }} />
+                <Hidden smUp>
+                    <Divider classes={{ root: styles.divider }} />
+                </Hidden>
 
                 {/* Social */}
                 <Grid
                     item
                     container
-                    xs={3}
+                    xs={12}
+                    sm={3}
                     direction="column"
                     alignItems="center"
                     justify="center" >
@@ -138,16 +133,30 @@ export const Footer: React.FC = () => {
                     </Grid>
 
                 </Grid>
-                <Grid item container justify="center" alignItems="center">
+
+                <Grid
+                    item
+                    container
+                    justify="center"
+                    alignItems="center"
+                >
                     <Grid item xs={12}>
-                        <Divider classes={{ root: styles.divider }} flexItem />
+                        <Divider classes={{ root: styles.divider }} />
                     </Grid>
-                    <Grid item xs={4}>
-                        <p className={styles.text}> Moda Berti S.a.s di Tuzzato Monica & C - P.I. 0123456789 - Powered by Byteman</p>
+                    <Grid item container justify="center" sm={4}>
+                        <Grid item>
+                            <p className={styles.text}>Moda Berti s.a.s di Tuzzato Monica & C</p>
+                        </Grid>
+                        <Grid item>
+                            <p className={styles.text}>P.I. 0123456789 </p>
+                        </Grid>
+                        <Grid item>
+                            <p className={styles.text}>Powered by Byteman</p>
+                        </Grid>
                     </Grid>
                 </Grid>
 
             </Grid>
-        </footer>
+        </footer >
     )
 }

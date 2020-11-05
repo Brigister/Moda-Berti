@@ -64,6 +64,9 @@ export const AddProduct: React.FC<AddProductProps> = ({ clicked, handleBackdropA
         let fd = new FormData()
         fd.append("name", data.name);
         fd.append("brand", data.brand);
+        fd.append("gender", data.gender);
+        fd.append("collection", data.collection);
+        fd.append("fabric", data.fabric);
         fd.append("price", data.price);
         fd.append("image", data.image[0]);
         fd.append("sizes", JSON.stringify(data.sizes));
@@ -97,19 +100,31 @@ export const AddProduct: React.FC<AddProductProps> = ({ clicked, handleBackdropA
                         label="Nome Prodotto"
                         autoFocus
                     />
-
                     <MyFormField
                         ref={register}
                         name="image"
                         type='file'
                     />
-
                     <MyFormField
                         ref={register}
                         name="brand"
                         label="Brand"
                     />
-
+                    <MyFormField
+                        ref={register}
+                        name="fabric"
+                        label="Tessuto"
+                    />
+                    <MyFormField
+                        ref={register}
+                        name="gender"
+                        label="Genere"
+                    />
+                    <MyFormField
+                        ref={register}
+                        name="collection"
+                        label="Collezione"
+                    />
                     <MyFormField inputRef={register}
                         name="price"
                         label="Prezzo"

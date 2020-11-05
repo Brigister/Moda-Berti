@@ -2,7 +2,7 @@ import React from 'react'
 import { useQueryCache, QueryResult, useQuery, useMutation } from 'react-query';
 import api from '../../../../api/axiosIstance';
 import { ColDef, ValueFormatterParams, ValueGetterParams, RowsProp, DataGrid } from '@material-ui/data-grid';
-import { Loading } from '../../../../components/Loading';
+import { Loading } from '../../../../components/loading/Loading';
 import { Order } from '../../../../interfaces/interfaces';
 import { dateFormat } from '../../../../utils/dateFormatter';
 

@@ -10,7 +10,7 @@ interface BrandCardProps {
 export const BrandCard: React.FC<BrandCardProps> = ({ title, image, url = '' }) => {
     return (
         <Grid item  >
-            <Card raised style={{ width: 400 }}>
+            <Card raised >
                 <a href={url} target="_blank">
                     <CardMedia
                         style={{ height: 200, width: 300, margin: "auto" }}

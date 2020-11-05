@@ -9,9 +9,7 @@ router.route('/')
     .post(checkAuth, insertProduct)
     .delete(checkAuth, deleteUserCart);
 
-
-
 router.route('/:id')
-    .patch(removeFromCart)
+    .patch(checkAuth, removeFromCart);
 
 module.exports = router

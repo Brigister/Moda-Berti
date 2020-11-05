@@ -98,7 +98,7 @@ export const Login: React.FC = () => {
                     className={styles.container}
                 >
                     <Grid item xs={6}>
-                        <Link to="/resetPassword" className={styles.links}>Password dimenticata?</Link>
+                        <Link to="/forgotPassword" className={styles.links}>Password dimenticata?</Link>
                     </Grid>
                     <Grid item xs={6}>
                         <Link to="/signup" className={styles.links}>Non hai un account? Registrati</Link>

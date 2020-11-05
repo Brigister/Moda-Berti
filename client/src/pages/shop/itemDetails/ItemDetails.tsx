@@ -13,11 +13,12 @@ import {
 import styles from './itemDetails.module.css'
 import { ProductDescription } from './ProductDescription';
 
-import { QueryResult, useMutation, useQuery } from 'react-query';
+import { QueryResult, useMutation, useQuery, useQueryCache } from 'react-query';
 import api from '../../../api/axiosIstance';
 import { ProductDetails } from '../../../interfaces/interfaces';
-import { Loading } from '../../../components/Loading';
+import { Loading } from '../../../components/loading/Loading';
 import { priceFormatter } from '../../../utils/priceFormatter';
+import { MiniCart } from './miniCart/MiniCart';
 
 interface ParamTypes {
     id: string
@@ -30,12 +31,17 @@ interface ToBeAdded {
 
 export const ItemDetails: React.FC = () => {
     let { id: paramId } = useParams<ParamTypes>();
+    const cache = useQueryCache();
 
     const [currentSize, setCurrentSize] = useState<string>("");
 
     const [addProductToCart] = useMutation(async (data: ToBeAdded) => {
         const res = await api.post('cart', data);
         return res.data;
+    }, {
+        onSuccess: () => {
+            cache.invalidateQueries('cart');
+        }
     });
 
     const { isLoading, error, data }: QueryResult<any, Error> = useQuery(['productDetails', paramId], () =>
@@ -89,22 +95,14 @@ export const ItemDetails: React.FC = () => {
                         />)
                     }
                 </Grid>
-                {/*                 <Grid item xs={12} >
-                    <ul>
-                        {descriptions && descriptions.map(
-                            ({ id, description }) => <ProductDescription key={id} description={description} />)}
-                    </ul>
-                </Grid> */}
-
-            </Grid>
-            <Grid item container xs={4} justify="center">
-                <Grid>
-
-                </Grid>
                 <Grid item>
                     <Button variant="contained" color="primary" onClick={addToCart}>Aggiungi al carrello</Button>
                 </Grid>
 
+
+            </Grid>
+            <Grid item container xs={4} justify="center" >
+                <MiniCart />
             </Grid>
         </Grid >
 

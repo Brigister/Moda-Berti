@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const { verify } = require('jsonwebtoken');
 
 const pool = require('../config/database');
+const sendMail = require('../config/nodemailer');
 const { createAccessToken, createRefreshToken } = require('../utils/jwt');
 
 /**
@@ -37,10 +38,26 @@ exports.signup = (req, res, next) => {
                         error: error
                     });
                 }
-                else return res.status(200).json({
-                    success: true,
-                    data: results,
-                })
+                else {
+                    const mail = {
+                        from: process.env.EMAIL,
+                        to: email,
+                        subject: "Verifica il tuo Account",
+                        html: "<a href='http://localhost:3000/'>Clicca il seguente link per verificare il tuo account</a>",
+                        auth: {
+                            user: process.env.EMAIL,
+                            refreshToken: process.env.NODEMAILER_REFRESH_TOKEN,
+                            accessToken: process.env.NODEMAILER_ACCESS_TOKEN,
+                            expires: 3599,
+                        }
+                    }
+                    const emailResponse = sendMail(mail);
+                    console.log(emailResponse);
+                    return res.status(200).json({
+                        success: true,
+                        data: results,
+                    })
+                }
             })
         }
     })

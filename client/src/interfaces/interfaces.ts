@@ -89,3 +89,8 @@ export interface Order {
 export interface StripeProps {
     total: number
 }
+
+export interface MobileDrawerProps {
+    openMobile: boolean;
+    setOpenMobile: () => void
+}

@@ -9,12 +9,12 @@ interface TypeCardProps {
 
 export const TypeCard: React.FC<TypeCardProps> = ({ title, image }) => {
     return (
-        <Card raised style={{ width: "500px" }}>
+        <Card raised style={{ width: "70%", margin: "auto" }}>
             <Link to={{ pathname: "/shop/products", search: `?gender=${title}` }}>
-                <CardHeader
+                {/* <CardHeader
                     style={{ textAlign: "center" }}
                     title={title}
-                />
+                /> */}
                 <CardMedia style={{ height: 300 }}
                     title={title}
                     image={image}

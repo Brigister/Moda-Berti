@@ -1,8 +1,10 @@
-.button {
-    width: 200px;
-    height: 40px;
+.itemCard {
+    width: 100%;
+    margin-bottom: 1%;
+    /* height: 197px; */
 }
 
-.cartItem {
-    margin-bottom: 2% !important;
+
+.delete {
+    color: red;
 }

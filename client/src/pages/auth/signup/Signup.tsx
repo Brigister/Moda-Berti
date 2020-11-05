@@ -107,7 +107,7 @@ export const Signup: React.FC = () => {
                     className={styles.container}
                 >
                     <Grid item xs={8}>
-                        <Link to="/resetPassword" className={styles.links}>Password dimenticata?</Link>
+                        <Link to="/forgotPassword" className={styles.links}>Password dimenticata?</Link>
                     </Grid>
                     <Grid item xs={4}>
                         <Link to="/login" className={styles.links}>Hai già un account?</Link>

@@ -1,6 +1,6 @@
 .links{ 
     all: unset;
-    color: white;
+    color: black;
     cursor: pointer;
     margin-left: 15px;
     margin-right: 15px;
@@ -9,12 +9,12 @@
 .container{
     display: flex;
     justify-content: space-between;
+    background: linear-gradient(rgba(255,255,200), rgba(252,255,50));
 }
 
-/* .routes {
-    display: flex;
-    justify-content: space-between;
-} */
+.logo {
+    height: 60px;
+}
 
 .route { 
     all: unset;
@@ -22,5 +22,6 @@
 }
 
 .active{
-    color: red;
+    background: linear-gradient(rgba(255,255,200), rgba(255,0,0));
+    padding: 25px;
 }

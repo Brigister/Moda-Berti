@@ -8,7 +8,7 @@ import { ShopItem } from '../shopItem/ShopItem';
 import { PaginatedQueryResult, QueryResult, usePaginatedQuery, useQuery, useQueryCache } from 'react-query';
 import api from '../../../api/axiosIstance';
 import { Product } from '../../../interfaces/interfaces';
-import { Loading } from '../../../components/Loading';
+import { Loading } from '../../../components/loading/Loading';
 import { useLocation } from 'react-router-dom';
 import { Pagination } from '@material-ui/lab';
 

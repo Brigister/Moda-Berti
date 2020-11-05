@@ -1,4 +1,4 @@
-import { TextField, Button } from '@material-ui/core'
+import { Button } from '@material-ui/core'
 import React, { forwardRef } from 'react'
 import { useFieldArray } from 'react-hook-form'
 import { MyFormField } from './MyFormField'
@@ -18,12 +18,10 @@ export const SizeForm: React.FC<any> = forwardRef((props, ref) => {
         name: "sizes",
     })
 
-    console.log(fields);
-
     return (
         <>
             {fields.map((field, index) => (
-                <div key={field.size}>
+                <div key={field.id}>
                     <MyFormField
                         name={`sizes[${index}].size`}
                         ref={ref}

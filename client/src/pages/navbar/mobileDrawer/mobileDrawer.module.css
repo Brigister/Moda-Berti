@@ -1,0 +1,27 @@
+.container {
+    z-index: 1199 !important;
+}
+
+.links {
+    all: unset;
+    color: black;
+    cursor: pointer;
+}
+
+.routes {
+    display: flex;
+    flex-direction: column;
+    margin-top: 70px !important;
+    width: 200px !important;
+    background: linear-gradient(rgba(255,255,200), rgba(252,255,50));
+    height: 100vh;
+}
+
+.route { 
+    text-align: center;
+    margin-top: 10%;
+    font-size: 1.5em;
+    width: 200px;
+    
+
+}

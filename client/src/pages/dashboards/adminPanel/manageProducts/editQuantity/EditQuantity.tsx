@@ -1,48 +1,54 @@
-import React, { useState } from 'react';
-
-import { useForm, useFieldArray } from 'react-hook-form';
-/* import { } from "../../../../../redux/ProductsReducer"; */
-
-
-
-import styles from '../addProduct/addProduct.module.css'
-
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { useMutation, useQueryCache } from 'react-query';
 import {
-    Button,
     Dialog,
     DialogTitle,
     DialogContent,
-    TextField,
 } from '@material-ui/core'
 import { SizeForm } from '../../../../../components/SizeForm';
-import { useQuery } from 'react-query';
+import { AdminProductDetails, AdminSize } from '../../../../../interfaces/interfaces';
 import api from '../../../../../api/axiosIstance';
-import { AdminSize } from '../../../../../interfaces/interfaces';
 
 interface EditQuantityProps {
     id: number;
-    sizes: AdminSize[];
+    product?: AdminProductDetails;
     clicked: boolean;
-    handleBackdropEditQuantity: () => void;
+    closeEditQuantity: () => void;
 }
-export const EditQuantity: React.FC<EditQuantityProps> = ({ id, sizes, clicked, handleBackdropEditQuantity }) => {
-    console.log(id);
-    console.log(sizes);
+export const EditQuantity: React.FC<EditQuantityProps> = ({ id, product, clicked, closeEditQuantity }) => {
+    const cache = useQueryCache();
 
+    const { sizes } = product!;
     const { register, handleSubmit, control, } = useForm<any>({
         defaultValues: { sizes }
     });
 
+    const [addSizes] = useMutation(async (data: AdminSize[]) => {
+        const res = await api.patch(`products/${id}/editSizes`, data);
+        console.log(res.data);
+        return res.data;
+    }, {
+        onSuccess: (_, variables) => {
+            /* const products = cache.getQueryData('products') as AdminProductDetails[];
+            const index = products.findIndex(product => product.id === id);
+            products[index].sizes = variables;
+            cache.setQueryData('products', products) */
+            cache.invalidateQueries('products');
+        }
+    })
 
     const onSubmit = async (data: AdminSize[]) => {
         console.log(data);
+        await addSizes(data);
+        closeEditQuantity();
 
     }
     return (
         <>
             <Dialog
                 open={clicked}
-                onBackdropClick={handleBackdropEditQuantity}
+                onBackdropClick={closeEditQuantity}
                 /* className={styles.dialog} */
                 fullWidth
                 maxWidth="md"

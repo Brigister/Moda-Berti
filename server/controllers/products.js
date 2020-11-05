@@ -1,6 +1,8 @@
 const fs = require('fs');
 const pool = require('../config/database');
-const upload = require('../middleware/multer');
+const { upload } = require('../middleware/multer');
+const tinify = require('../config/tinify')
+
 const { queryPromise } = require('../utils/mysql-promise-wrapper');
 
 /**
@@ -35,6 +37,8 @@ exports.getProduct = async (req, res, next) => {
     const { id } = req.params;
     console.log(id);
     const sql = `CALL product_details(${id})`;
+
+
     pool.query(sql, (error, results) => {
         if (error) {
             return res.status(500).json({
@@ -49,7 +53,7 @@ exports.getProduct = async (req, res, next) => {
             });
         }
         else {
-            const parsed = JSON.parse(results[0].product_details);
+            const parsed = JSON.parse(results[0][0].product_details);
             return res.status(200).json({
                 success: true,
                 data: parsed
@@ -59,24 +63,22 @@ exports.getProduct = async (req, res, next) => {
 }
 
 exports.getProductByGender = async (req, res, next) => {
-
     const { gender, page } = req.query;
-    console.log(gender);
-    console.log(page)
+    const sql = `SELECT * FROM products WHERE gender = ${pool.escape(gender)} ORDER BY create_time ASC LIMIT 10 OFFSET ${pool.escape(page * 10)} `
 
-    const sql = `SELECT * FROM products WHERE gender = ${pool.escape(gender)} LIMIT 10 OFFSET ${pool.escape(page * 10)} `
-
-    const result = await queryPromise(pool, sql, gender).catch(error => {
+    try {
+        const result = await queryPromise(pool, sql, gender);
+        return res.status(200).json({
+            success: true,
+            data: result
+        });
+    }
+    catch (error) {
         return res.status(500).json({
             success: false,
             error
         });
-    })
-
-    return res.status(200).json({
-        success: true,
-        data: result
-    })
+    }
 }
 
 /**
@@ -88,21 +90,25 @@ exports.getProductByGender = async (req, res, next) => {
 exports.postProduct = (req, res, next) => {
     upload(req, res, (err) => {
         console.log(req.file)
+
         if (err) {
+            console.log('qui')
             return res.status(500).json({
                 success: false,
                 error: err
             })
         }
         else {
+            const source = tinify.fromFile(req.file.path.replace("\\", "/"));
+            fs.unlinkSync(req.file.path)
+            source.toFile(req.file.path);
             const { name, brand, gender, collection, price, } = req.body;
 
             const product = {
-                article_id: "ao2222",
                 name,
                 brand,
-                gender: "Woman",
-                collection: "FW20",
+                gender,
+                collection,
                 price,
                 image_url: req.file.path.replace("\\", "/")
             };
@@ -203,11 +209,11 @@ exports.deleteProduct = (req, res, next) => {
  * @acces Private 
  */
 exports.editProduct = (req, res) => {
-    const { id } = req.params;
+    const { userId } = req.userData;
     const { table } = req.body;
     delete req.body.table;
 
-    const sql = `UPDATE ?? SET ? WHERE id = ${pool.escape(id)}`;
+    const sql = `UPDATE ?? SET ? WHERE id = ${pool.escape(userId)}`;
 
     pool.query(sql, [table, req.body], (error, results) => {
 
@@ -226,6 +232,54 @@ exports.editProduct = (req, res) => {
 }
 
 exports.editSizes = (req, res) => {
+    const { id } = req.params;
+    const { sizes } = req.body;
 
+    const deleteSQL = `DELETE FROM sizes WHERE product_id = ${id}`;
+    const insertSQL = `INSERT INTO sizes (size, quantity, product_id) VALUES ?`;
 
+    pool.getConnection((err, connection) => {
+        if (err) {
+            return res.status(500).json({
+                success: false,
+                error: err
+            });
+        }
+        connection.beginTransaction(err => {
+            if (err) {
+                connection.rollback();
+                return res.status(500).json({
+                    success: false,
+                    error: err
+                });
+            }
+
+            connection.query(deleteSQL, (error, results) => {
+                if (error) {
+                    return res.status(500).json({
+                        success: false,
+                        error
+                    });
+                }
+            });
+
+            connection.query(insertSQL,
+                [sizes.map(size => [size.size.toUpperCase(), size.quantity, id])],
+                (error, results) => {
+                    if (error) {
+                        return res.status(500).json({
+                            success: false,
+                            error
+                        });
+                    }
+
+                    connection.commit();
+
+                    return res.status(200).json({
+                        success: true,
+                        data: results
+                    });
+                });
+        });
+    });
 }
