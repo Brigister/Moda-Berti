@@ -19,9 +19,10 @@
 .route { 
     all: unset;
     flex-basis: auto;
+    margin: 10px 0px;
 }
 
 .active{
     background: linear-gradient(rgba(255,255,200), rgba(255,0,0));
-    padding: 25px;
+    padding: 22px 15px;
 }

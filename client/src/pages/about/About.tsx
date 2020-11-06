@@ -1,5 +1,6 @@
 import React from 'react'
 import { Card, CardContent, CardHeader, Grid } from '@material-ui/core'
+import { Carousel } from './Carousel'
 
 
 
@@ -9,8 +10,8 @@ export const About: React.FC = () => {
 
     return (
 
-        <Grid container spacing={6} justify="center" alignItems="center" style={{ marginTop: "1%" }}>
-            <Grid item xs={12} sm={5} >
+        <Grid container spacing={6} justify="center" alignItems="center" style={{ margin: "auto" }}>
+            <Grid item xs={12} md={5} >
                 <Card raised>
                     <CardHeader title="La nostra storia" style={{ textAlign: "center" }} />
                     <CardContent>
@@ -22,11 +23,13 @@ export const About: React.FC = () => {
                 </Card>
             </Grid>
 
-            <Grid item xs={12} sm={5}>
+            <Grid item xs={12} md={5}>
                 <img src={require('../../assets/storia.jpeg')} alt="Immagine storica del negozio" style={{ borderRadius: 5 }} />
             </Grid>
-
-            <Grid item xs={12} sm={5}>
+            <Grid item xs={12} md={5}>
+                <Carousel />
+            </Grid>
+            <Grid item xs={12} md={5}>
                 <iframe
                     width="600"
                     height="450"

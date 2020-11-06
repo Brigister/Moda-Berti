@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useQueryCache, QueryResult, useQuery, useMutation } from 'react-query';
 import api from '../../../../api/axiosIstance';
 import { ColDef, ValueFormatterParams, ValueGetterParams, RowsProp, DataGrid } from '@material-ui/data-grid';
@@ -10,15 +10,20 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 
 import styles from './manageOrders.module.css'
+import { AxiosError } from 'axios';
+import { UpdateOrder } from './UpdateOrder';
 
 interface OrderDataGridProps {
     status: string;
 }
 
+
+
 export const OrderDataGrid: React.FC<OrderDataGridProps> = ({ status }) => {
-    console.log(status)
+    const [openUpdateOrderModal, setOpenUpdateOrderModal] = useState(false);
+    const [orderId, setOrderId] = useState<number>()
     const cache = useQueryCache();
-    const { data, error, isLoading }: QueryResult<Order[], Error> = useQuery(`${status} orders`, () =>
+    const { data, error, isLoading }: QueryResult<Order[], AxiosError> = useQuery(`${status} orders`, () =>
         api.get(`orders?status=${status}`)
             .then(res =>
                 res.data.data
@@ -46,6 +51,10 @@ export const OrderDataGrid: React.FC<OrderDataGridProps> = ({ status }) => {
     if (!data) return <h3>No data</h3>
     if (error) return <h3>Errore: {error.message}</h3>
 
+    const handleOpenModal = () => {
+        setOpenUpdateOrderModal(!openUpdateOrderModal);
+    }
+
     const columns: ColDef[] = [
         { field: 'id', headerName: 'Id' },
         { field: 'user_id', headerName: 'Utente' },
@@ -64,6 +73,10 @@ export const OrderDataGrid: React.FC<OrderDataGridProps> = ({ status }) => {
             renderCell: (params: ValueGetterParams) => (
                 <EditIcon
                     cursor="pointer"
+                    onClick={() => {
+                        setOpenUpdateOrderModal(true)
+                        setOrderId(params.getValue('id') as number)
+                    }}
                 />)
 
         },
@@ -79,21 +92,34 @@ export const OrderDataGrid: React.FC<OrderDataGridProps> = ({ status }) => {
     ];
 
     return (
-        <DataGrid
-            className={styles.pending_table}
-            columns={columns}
-            rows={data}
-            rowHeight={80}
-            pageSize={10}
-            rowsPerPageOptions={[5, 10, 20]}
-            autoHeight
-            disableExtendRowFullWidth
 
-            loading={isLoading}
-            components={{
-                loadingOverlay: Loading
-            }}
+        <>
+            {openUpdateOrderModal
+                ?
+                <UpdateOrder
+                    openUpdateOrderModal={openUpdateOrderModal}
+                    setOpenUpdateOrderModal={handleOpenModal}
+                    id={orderId!}
+                />
+                :
+                <></>
+            }
+            <DataGrid
+                className={styles.pending_table}
+                columns={columns}
+                rows={data}
+                rowHeight={80}
+                pageSize={10}
+                rowsPerPageOptions={[5, 10, 20]}
+                autoHeight
+                disableExtendRowFullWidth
 
-        />
+                loading={isLoading}
+                components={{
+                    loadingOverlay: Loading
+                }}
+
+            />
+        </>
     )
 }

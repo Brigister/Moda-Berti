@@ -3,7 +3,7 @@
     flex-direction: column;
 
     align-items: center;
-    width: 40%;
+    width: 60%;
     padding-top: 30px !important;
     padding-bottom: 30px !important;
 }
@@ -15,7 +15,7 @@
 }
 
 .cardDetails {
-    width: 36%;
+    width: 56%;
     margin-top: 30px;
     margin-bottom: 30px;
     padding-top: 50px;
@@ -28,4 +28,18 @@
     width: 10%;
     height: 56px;
     margin-bottom: 20px !important;
+}
+
+
+@media (max-width: 800px ) {
+    .container {
+        width: 90%;
+    }
+    .cardDetails {
+        width: 86%;
+    }
+
+    .button{
+        width: 30%;
+    }
 }

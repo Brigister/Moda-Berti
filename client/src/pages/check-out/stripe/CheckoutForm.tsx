@@ -13,6 +13,7 @@ import { StripeProps } from "../../../interfaces/interfaces"
 import { useMutation } from 'react-query'
 import Axios from 'axios'
 import { UserContext } from '../../../context/UserContext'
+import { useHistory } from 'react-router-dom'
 
 export const CheckoutForm: React.FC<StripeProps> = ({ total }) => {
     const [isProcessing, setProcessingTo] = useState(false);
@@ -20,15 +21,17 @@ export const CheckoutForm: React.FC<StripeProps> = ({ total }) => {
 
     const { user } = useContext(UserContext);
 
+    const history = useHistory();
+
     const stripe = useStripe();
     const elements = useElements();
 
     const cardElementOptions = {
         style: {
             base: {
-                fontSize: '40px',
-                width: "500px",
-                height: "200px"
+                fontSize: '30px',
+                height: "200px",
+
             },
             invalid: {
                 color: 'red'
@@ -121,6 +124,7 @@ export const CheckoutForm: React.FC<StripeProps> = ({ total }) => {
 
             await mutate();
             setProcessingTo(false);
+            history.push('userPanel/orderList')
 
         } catch (err) {
             setCheckoutError(err.message);

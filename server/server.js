@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const session = require('express-session');
+const path = require('path');
 /* const MySQLStore = require('express-mysql-session')(session); */
 
 
@@ -51,8 +52,12 @@ const cartRoute = require('./routes/cart');
 const stripeRoute = require('./routes/stripe');
 const orderRoute = require('./routes/orders');
 
-
+app.use(express.static(path.join(__dirname, '../client/build')))
 app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/build/index.html'))
+})
+
+app.get('/api', (req, res) => {
     res.status(200).send("<h1>Welcome to Moda Berti API</h1>")
 });
 

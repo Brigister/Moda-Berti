@@ -64,7 +64,7 @@ export interface IDescription {
 }
 
 export interface ProductDetails extends Product {
-    sizes?: ISize[];
+    sizes: ISize[];
     descriptions?: IDescription[];
     image?: Blob
 }
@@ -81,7 +81,7 @@ export interface OrderProduct extends Product {
 export interface Order {
     id: number;
     status: string;
-    products?: OrderProduct[];
+    products: OrderProduct[];
     tracking: string;
     create_time: Date;
 }

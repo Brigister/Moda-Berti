@@ -19,6 +19,7 @@ import { ProductDetails } from '../../../interfaces/interfaces';
 import { Loading } from '../../../components/loading/Loading';
 import { priceFormatter } from '../../../utils/priceFormatter';
 import { MiniCart } from './miniCart/MiniCart';
+import { NoImage } from '../../../components/NoImage';
 
 interface ParamTypes {
     id: string
@@ -65,11 +66,20 @@ export const ItemDetails: React.FC = () => {
 
     }
 
+    //ev: React.SyntheticEvent<HTMLImageEvent>?????
+    const onImageError = (ev: any) => {
+        console.log(ev);
+        ev.target.src = require('../../../assets/noimage.jpg')
+    }
+
     return (
         <Grid container justify="center" className={styles.container}>
             <Grid item xs={3}>
-
-                <img src={`http://localhost:4000/${image_url}`} alt={name} className={styles.image} />
+                <img
+                    src={`http://localhost:4000/${image_url}`}
+                    onError={onImageError}
+                    alt={name}
+                    className={styles.image} />
 
             </Grid>
             {/* mettere altre immagini */}
@@ -77,8 +87,8 @@ export const ItemDetails: React.FC = () => {
                 <Grid item xs={12}>
                     <h2 className={styles.name}>{name}</h2>
                     <p className={styles.brand}>{brand}</p>
-                    <p className={styles.fabric}>{`Tessuto: ${fabric ? fabric : "Non c'è ancora"}`}</p>
-                    <p className={styles.price}><strong>{price ? `${priceFormatter(price)}€` : 'prezzo non disponibile'}</strong></p>
+                    <p className={styles.fabric}>{`Tessuto: ${fabric ? fabric : "Tessuno non disponibile"}`}</p>
+                    <p className={styles.price}><strong>{price ? `${priceFormatter(price)}€` : 'Prezzo non disponibile'}</strong></p>
                     <p className={styles.selectedSize}>{currentSize ? `Taglia: ${currentSize}` : <></>} </p>
                 </Grid>
 
@@ -113,15 +123,15 @@ export const ItemDetails: React.FC = () => {
 
 /*
                     <FormControl className={classes.formControl}>
-                        <InputLabel>Taglia</InputLabel>
-                        <Select
-                            value={size || "Seleziona"}
-                            onChange={() => handleSize}
-                        >
-                            <MenuItem value="Seleziona">Seleziona</MenuItem>
+                <InputLabel>Taglia</InputLabel>
+                <Select
+                    value={size || "Seleziona"}
+                    onChange={() => handleSize}
+                >
+                    <MenuItem value="Seleziona">Seleziona</MenuItem>
 
-                            {sizes && sizes.map(
-                                ({ id, size }) => <MenuItem key={id} value={size}>{size}</MenuItem>)}
-                        </Select>
-                    </FormControl>
+                    {sizes && sizes.map(
+                        ({ id, size }) => <MenuItem key={id} value={size}>{size}</MenuItem>)}
+                </Select>
+            </FormControl>
 */

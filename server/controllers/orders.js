@@ -78,11 +78,10 @@ exports.postOrder = async (id) => {
 }
 
 exports.manageOrder = async (req, res) => {
-    const { id, status } = req.body
-    const sql = `UPDATE order SET status= ? WHERE id= ?`;
-
+    const { id } = req.params
+    const sql = `UPDATE orders SET ? WHERE id= ?`;
     try {
-        const result = await queryPromise(pool, sql, [status, id]);
+        const result = await queryPromise(pool, sql, [req.body, id]);
 
         return res.status(200).json({
             success: true,

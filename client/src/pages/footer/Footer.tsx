@@ -18,7 +18,7 @@ export const Footer: React.FC = () => {
                     item
                     container
                     xs={12}
-                    sm={3}
+                    md={3}
                     justify="center"
                     alignItems="center"
                     direction="column"
@@ -76,14 +76,14 @@ export const Footer: React.FC = () => {
                 </Grid>
 
                 <Divider orientation="vertical" flexItem classes={{ root: styles.divider }} />
-                <Hidden smUp>
+                <Hidden mdUp>
                     <Divider classes={{ root: styles.divider }} />
                 </Hidden>
                 <Grid
                     item
                     container
                     xs={12}
-                    sm={3}
+                    md={3}
                     direction="column"
                     alignItems="center"
                     justify="center"
@@ -91,21 +91,21 @@ export const Footer: React.FC = () => {
                     <Grid item>
                         <h3>Contatti</h3>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item >
                         <PhoneIcon fontSize="small" />
                         <a href="tel:+39041921705" className={styles.link}>041921705</a>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item >
                         <EmailIcon fontSize="small" />
                         <a href="mailto:info@modaberti.it" className={styles.link}>info@modaberti.it</a>
                     </Grid>
-                    <Grid item xs={12}>
-                        <p className={styles.text}>Via Cesare Beccaria 111 - Marghera VE</p>
+                    <Grid item >
+                        <p className={styles.text}>Via Cesare Beccaria 111 - Marghera</p>
                     </Grid>
                 </Grid>
 
                 <Divider orientation="vertical" flexItem classes={{ root: styles.divider }} />
-                <Hidden smUp>
+                <Hidden mdUp>
                     <Divider classes={{ root: styles.divider }} />
                 </Hidden>
 
@@ -114,7 +114,7 @@ export const Footer: React.FC = () => {
                     item
                     container
                     xs={12}
-                    sm={3}
+                    md={3}
                     direction="column"
                     alignItems="center"
                     justify="center" >
@@ -143,7 +143,7 @@ export const Footer: React.FC = () => {
                     <Grid item xs={12}>
                         <Divider classes={{ root: styles.divider }} />
                     </Grid>
-                    <Grid item container justify="center" sm={4}>
+                    <Grid item container justify="center" md={4}>
                         <Grid item>
                             <p className={styles.text}>Moda Berti s.a.s di Tuzzato Monica & C</p>
                         </Grid>
